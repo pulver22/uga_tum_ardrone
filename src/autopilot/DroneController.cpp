@@ -149,6 +149,7 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
 	p_term[1] = - sin(yawRad)*new_err[0] - cos(yawRad)*new_err[1];
 
 
+
     // calculate the damping coefficient assuming critically damped
     double c_direct = 2 * sqrt( K_direct_agr * droneMassInKilos );
     double c_rp = 2 * sqrt( K_rp_agr * droneMassInKilos );
@@ -160,8 +161,8 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     double springForceYaw = K_direct_agr * new_err[3] * 2 * 3.141592 / 360;
     double springForceGaz = K_direct_agr * new_err[2];
 
-    double dampingForceRoll = c_rp * vel_term[0];
-    double dampingForcePitch = c_rp * vel_term[1];
+    double dampingForceRoll = c_rp * -vel_term[0];
+    double dampingForcePitch = c_rp * -vel_term[1];
     double dampingForceYaw = c_direct * new_velocity[3] * 2 * 3.141592 / 360;
     double dampingForceGaz = c_direct * new_velocity[2];
 
