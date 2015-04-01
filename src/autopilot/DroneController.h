@@ -20,9 +20,9 @@
  */
 #ifndef __DRONECONTROLLER_H
 #define __DRONECONTROLLER_H
- 
- 
- 
+
+
+
 
 #include "TooN/se3.h"
 #include <queue>
@@ -59,7 +59,7 @@ class DroneController
 {
 private:
 	ControlCommand lastSentControl;
-	
+
 	// currentTarget.
 	DronePosition target;
 	bool targetValid;
@@ -109,30 +109,20 @@ public:
 
 
 
+    // damped spring control parameters, settable by dynamic reconfigure
 
-	// PID control parameters. settable via dynamic_reconfigure
-	// target is where i want to get to.
-	// pose and yaw are where i am.
-	double max_yaw;
-	double max_rp;
-	double max_gaz_rise;
-	double max_gaz_drop;
+    double K_direct;        // spring strength for yaw and linear Z
+    double K_rp;            // spring strength for roll and pitch
+
+    double droneMassInKilos;
+    double max_rp_radians;  // maximum roll and pitch of the drone in radians (not the ardrone_autonomy parameter)
 
 	double rise_fac;
 	double agressiveness;
-
-	double Ki_yaw;
-	double Kd_yaw;
-	double Kp_yaw;
-
-	double Ki_gaz;
-	double Kd_gaz;
-	double Kp_gaz;
-
-	double Ki_rp;
-	double Kd_rp;
-	double Kp_rp;
-
+	double max_gaz_rise;
+	double max_gaz_drop;
+	double max_yaw;
+	double max_rp;
 };
 #endif /* __DRONECONTROLLER_H */
 

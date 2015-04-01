@@ -17,9 +17,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
- 
- 
+
+
+
 #include "ControlNode.h"
 #include "ros/ros.h"
 #include "ros/callback_queue.h"
@@ -374,17 +374,10 @@ void ControlNode::Loop()
 }
 void ControlNode::dynConfCb(tum_ardrone::AutopilotParamsConfig &config, uint32_t level)
 {
-	controller.Ki_gaz = config.Ki_gaz;
-	controller.Kd_gaz = config.Kd_gaz;
-	controller.Kp_gaz = config.Kp_gaz;
-
-	controller.Ki_rp = config.Ki_rp;
-	controller.Kd_rp = config.Kd_rp;
-	controller.Kp_rp = config.Kp_rp;
-
-	controller.Ki_yaw = config.Ki_yaw;
-	controller.Kd_yaw = config.Kd_yaw;
-	controller.Kp_yaw = config.Kp_yaw;
+	controller.K_direct = config.K_direct;
+	controller.K_rp = config.K_rp;
+	controller.droneMassInKilos = config.droneMassInKilos;
+	controller.max_rp_radians = config.max_rp_radians;
 
 	controller.max_gaz_drop = config.max_gaz_drop;
 	controller.max_gaz_rise = config.max_gaz_rise;
@@ -392,6 +385,7 @@ void ControlNode::dynConfCb(tum_ardrone::AutopilotParamsConfig &config, uint32_t
 	controller.max_yaw = config.max_yaw;
 	controller.agressiveness = config.agressiveness;
 	controller.rise_fac = config.rise_fac;
+
 }
 
 pthread_mutex_t ControlNode::tum_ardrone_CS = PTHREAD_MUTEX_INITIALIZER;
@@ -503,7 +497,7 @@ void ControlNode::clearCommands() {
 bool ControlNode::setReference(SetReference::Request& req, SetReference::Response& res)
 {
 	ROS_INFO("calling service setReference");
-	parameter_referenceZero = DronePosition(TooN::makeVector(req.x, req.y, req.z), req.heading);	
+	parameter_referenceZero = DronePosition(TooN::makeVector(req.x, req.y, req.z), req.heading);
 	res.status = true;
 	return true;
 }
