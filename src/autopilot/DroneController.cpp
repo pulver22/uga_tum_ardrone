@@ -180,7 +180,7 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     // The new commands
 	lastSentControl.roll = atan(totalForceRoll / (9.8 * droneMassInKilos)) / max_rp_radians;
 	lastSentControl.pitch = atan(totalForcePitch / (9.8 * droneMassInKilos)) / max_rp_radians;
-	lastSentControl.yaw = new_velocity[3] * 2 * 3.141592 / 360 + deltaYaw;	// yaw can be translated directly
+	lastSentControl.yaw = (new_velocity[3] * 2 * 3.141592 / 360 + deltaYaw) / 1.66;	// yaw can be translated directly, command is 1.0 = 1.66 rads/second
 	lastSentControl.gaz = new_velocity[2] + deltaGaz;	// gaz can be translated directly
 
 	// clip
