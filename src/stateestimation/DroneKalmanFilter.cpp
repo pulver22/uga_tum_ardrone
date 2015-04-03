@@ -366,7 +366,9 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 		baselineY_IMU = nav->rotZ;
 		baselineY_Filter = yaw.state[0];
 		baselinesYValid = true;
+		lastTimestampYawBaselineFrom = 0;
 		timestampYawBaselineFrom = getMS(nav->header.stamp);
+		lastdYaw = 0;
 	}
 
 	double imuYawDiff = (nav->rotZ - baselineY_IMU );
@@ -381,18 +383,21 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 	else
 		observedYaw = angleFromTo(observedYaw,-180,180);
 
+    double observedYawSpeed = (observedYaw - lastdYaw) / ((timestampYawBaselineFrom - lastTimestampYawBaselineFrom) / 1000.0);
 
 	if(lastPosesValid)
 	{
 
 		baselineY_IMU = nav->rotZ;
 		baselineY_Filter = yaw.state[0];
+		lastTimestampYawBaselineFrom = timestampYawBaselineFrom;
 		timestampYawBaselineFrom = getMS(nav->header.stamp);
 
 
 		if(abs(observedYaw - yaw.state[0]) < 10)
 		{
 			yaw.observePose(observedYaw,2*2);
+			yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw);
 			lastdYaw = observedYaw;
 		}
 	}
@@ -400,12 +405,14 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 		if(abs(observedYaw - yaw.state[0]) < 10)
 		{
 			yaw.observePose(observedYaw,1*1);
+			yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw /2);
 			lastdYaw = observedYaw;
 		}
 		else
 		{
 			baselineY_IMU = nav->rotZ;
 			baselineY_Filter = yaw.state[0];
+			lastTimestampYawBaselineFrom = timestampYawBaselineFrom;
 			timestampYawBaselineFrom = getMS(nav->header.stamp);
 		}
 
