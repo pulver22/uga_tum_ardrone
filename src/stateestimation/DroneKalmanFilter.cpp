@@ -472,7 +472,7 @@ void DroneKalmanFilter::observePTAM(TooN::Vector<6> pose)
 		else
 			observedYaw = angleFromTo(observedYaw,-180,180);
 
-		yaw.observePose(observedYaw,varPoseObservation_yaw);
+		yaw.observePose(observedYaw,.1*.1);
 		yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 	}
 

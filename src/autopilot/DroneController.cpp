@@ -163,8 +163,8 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
 
     double dampingForceRoll = c_rp * -vel_term[0];
     double dampingForcePitch = c_rp * -vel_term[1];
-    double dampingForceYaw = c_direct * new_velocity[3];
-    double dampingForceGaz = c_direct * new_velocity[2];
+    double dampingForceYaw = c_direct * -new_velocity[3];
+    double dampingForceGaz = c_direct * -new_velocity[2];
 
     double totalForceRoll = springForceRoll - dampingForceRoll;
     double totalForcePitch = springForcePitch - dampingForcePitch;
