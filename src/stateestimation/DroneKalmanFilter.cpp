@@ -163,7 +163,7 @@ void DroneKalmanFilter::reset()
 
 	baselineZ_Filter = baselineZ_IMU = -999999;
 	baselinesYValid = false;
-
+    initializedAbsoluteY = false;
 
 	node->publishCommand("u l EKF has been reset to zero.");
 }
@@ -369,6 +369,13 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 		lastTimestampYawBaselineFrom = 0;
 		timestampYawBaselineFrom = getMS(nav->header.stamp);
 		lastdYaw = 0;
+	}
+
+	if (!initializedAbsoluteY && nav->state > 2 && nav->state < 7) {
+        yaw.state[0] = nav->rotZ;
+  		baselineY_IMU = nav->rotZ;
+        lastdYaw = nav->rotZ;
+        initializedAbsoluteY = true;
 	}
 
 	double imuYawDiff = (nav->rotZ - baselineY_IMU );

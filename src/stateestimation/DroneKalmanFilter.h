@@ -309,7 +309,7 @@ private:
 	double last_z_heightDiff;
 	double baselineY_IMU;
 	double baselineY_Filter;
-	bool baselinesYValid;
+	bool baselinesYValid, initializedAbsoluteY;
 	int timestampYawBaselineFrom, lastTimestampYawBaselineFrom;
 	double lastVXGain;
 	double lastVYGain;
