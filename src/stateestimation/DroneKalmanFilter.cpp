@@ -374,11 +374,12 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 
 	if (!initializedAbsoluteY && nav->state > 2 && nav->state < 7) {
         rotZOffset = nav->rotZ;
+        baselineY_IMU = 0;
         initializedAbsoluteY = true;
 	}
 
 	double imuYawDiff = (nav->rotZ - rotZOffset - baselineY_IMU );
-	double observedYaw = baselineY_Filter + imuYawDiff;
+	double observedYaw = nav->rotZ - rotZOffset;
 
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 
@@ -389,7 +390,7 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 	else
 		observedYaw = angleFromTo(observedYaw,-180,180);
 
-    double observedYawSpeed = (observedYaw - lastdYaw) / ((timestampYawBaselineFrom - lastTimestampYawBaselineFrom) / 1000.0);
+    double observedYawSpeed = (imuYawDiff) / ((timestampYawBaselineFrom - lastTimestampYawBaselineFrom) / 1000.0);
 
 	if(lastPosesValid)
 	{
@@ -472,7 +473,7 @@ void DroneKalmanFilter::observePTAM(TooN::Vector<6> pose)
 		else
 			observedYaw = angleFromTo(observedYaw,-180,180);
 
-		yaw.observePose(observedYaw,.1*.1);
+		yaw.observePose(observedYaw,3*3);
 		yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 	}
 
