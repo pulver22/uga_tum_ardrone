@@ -175,8 +175,8 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     // Integrate for yaw and gaz control
 	double deltaT = getMS()/1000.0 - lastTimeStamp; lastTimeStamp = getMS()/1000.0;
 
-    double deltaYaw = totalForceYaw / droneMassInKilos * deltaT;
-    double deltaGaz = totalForceGaz / droneMassInKilos * deltaT;
+    double deltaYaw = totalForceYaw / droneMassInKilos * deltaT / 2;
+    double deltaGaz = totalForceGaz / droneMassInKilos * deltaT / 2;
 
     // The new commands
 	lastSentControl.roll = atan(totalForceRoll / (9.8 * droneMassInKilos)) / max_rp_radians;
