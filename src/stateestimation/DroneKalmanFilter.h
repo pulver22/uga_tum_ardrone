@@ -313,6 +313,7 @@ private:
 	int timestampYawBaselineFrom, lastTimestampYawBaselineFrom;
 	double lastVXGain;
 	double lastVYGain;
+	double rotZOffset;
 
 
 

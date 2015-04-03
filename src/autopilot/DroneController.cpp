@@ -163,12 +163,12 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
 
     double dampingForceRoll = c_rp * -vel_term[0];
     double dampingForcePitch = c_rp * -vel_term[1];
-    double dampingForceYaw = c_direct * -new_velocity[3];
+    double dampingForceYaw = c_direct * new_velocity[3];
     double dampingForceGaz = c_direct * new_velocity[2];
 
     double totalForceRoll = springForceRoll - dampingForceRoll;
     double totalForcePitch = springForcePitch - dampingForcePitch;
-    double totalForceYaw = (springForceYaw - dampingForceYaw) * .571;
+    double totalForceYaw = springForceYaw - dampingForceYaw;
     double totalForceGaz = springForceGaz - dampingForceGaz;
 
 
@@ -181,7 +181,7 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     // The new commands
 	lastSentControl.roll = atan(totalForceRoll / (9.8 * droneMassInKilos)) / max_rp_radians;
 	lastSentControl.pitch = atan(totalForcePitch / (9.8 * droneMassInKilos)) / max_rp_radians;
-	lastSentControl.yaw = (new_velocity[3] + deltaYaw) * 2 * 3.141592 / 360 / 1.66;	// yaw can be translated directly, command is 1.0 = 1.66 rads/second
+	lastSentControl.yaw = (new_velocity[3] + deltaYaw) * 2 * 3.141592 / 360;	// yaw can be translated directly, command is 1.0 = 1.66 rads/second
 	lastSentControl.gaz = new_velocity[2] + deltaGaz;	// gaz can be translated directly
 
 	// clip

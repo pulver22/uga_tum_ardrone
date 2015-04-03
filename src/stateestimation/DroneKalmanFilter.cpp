@@ -164,6 +164,7 @@ void DroneKalmanFilter::reset()
 	baselineZ_Filter = baselineZ_IMU = -999999;
 	baselinesYValid = false;
     initializedAbsoluteY = false;
+    rotZOffset = 0;
 
 	node->publishCommand("u l EKF has been reset to zero.");
 }
@@ -363,7 +364,7 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 
 	if(!baselinesYValid)	// only for initialization.
 	{
-		baselineY_IMU = nav->rotZ;
+		baselineY_IMU = nav->rotZ - rotZOffset;
 		baselineY_Filter = yaw.state[0];
 		baselinesYValid = true;
 		lastTimestampYawBaselineFrom = 0;
@@ -372,13 +373,11 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 	}
 
 	if (!initializedAbsoluteY && nav->state > 2 && nav->state < 7) {
-        yaw.state[0] = nav->rotZ;
-  		baselineY_IMU = nav->rotZ;
-        lastdYaw = nav->rotZ;
+        rotZOffset = nav->rotZ;
         initializedAbsoluteY = true;
 	}
 
-	double imuYawDiff = (nav->rotZ - baselineY_IMU );
+	double imuYawDiff = (nav->rotZ - rotZOffset - baselineY_IMU );
 	double observedYaw = baselineY_Filter + imuYawDiff;
 
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
@@ -395,7 +394,7 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 	if(lastPosesValid)
 	{
 
-		baselineY_IMU = nav->rotZ;
+		baselineY_IMU = nav->rotZ - rotZOffset;
 		baselineY_Filter = yaw.state[0];
 		lastTimestampYawBaselineFrom = timestampYawBaselineFrom;
 		timestampYawBaselineFrom = getMS(nav->header.stamp);
@@ -404,7 +403,7 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 		if(abs(observedYaw - yaw.state[0]) < 10)
 		{
 			yaw.observePose(observedYaw,2*2);
-			yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw);
+			yaw.observeSpeed(observedYawSpeed,2*2);
 			lastdYaw = observedYaw;
 		}
 	}
@@ -412,18 +411,18 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 		if(abs(observedYaw - yaw.state[0]) < 10)
 		{
 			yaw.observePose(observedYaw,1*1);
-			yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw /2);
+			yaw.observeSpeed(observedYawSpeed,1*1);
 			lastdYaw = observedYaw;
 		}
 		else
 		{
-			baselineY_IMU = nav->rotZ;
+			baselineY_IMU = nav->rotZ - rotZOffset;
 			baselineY_Filter = yaw.state[0];
 			lastTimestampYawBaselineFrom = timestampYawBaselineFrom;
 			timestampYawBaselineFrom = getMS(nav->header.stamp);
 		}
 
-	last_yaw_IMU = nav->rotZ;
+	last_yaw_IMU = nav->rotZ - rotZOffset;
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 }
 
