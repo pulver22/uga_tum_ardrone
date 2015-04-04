@@ -380,10 +380,10 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 
-	if(yaw.state[0] < -90) {
+	if(observedYaw < -90) {
 		observedYaw = angleFromTo(observedYaw,-360,0);
 		baselineY_IMU = angleFromTo(baselineY_IMU,-360,0);
-	} else if(yaw.state[0] > 90) {
+	} else if(observedYaw > 90) {
 		observedYaw = angleFromTo(observedYaw,0,360);
 		baselineY_IMU = angleFromTo(baselineY_IMU,0,360);
 	} else {
