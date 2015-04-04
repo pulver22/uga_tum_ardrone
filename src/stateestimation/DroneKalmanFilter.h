@@ -259,7 +259,6 @@ private:
 	std::vector<ScaleStruct>* scalePairs;
 
 	// parameters used for height and yaw differentiation
-	double last_yaw_IMU;
 	double last_z_IMU;
 	long last_yaw_droneTime;
 	long last_z_droneTime;
@@ -308,9 +307,8 @@ private:
 	double baselineZ_Filter;
 	double last_z_heightDiff;
 	double baselineY_IMU;
-	double baselineY_Filter;
 	bool baselinesYValid, initializedAbsoluteY;
-	int timestampYawBaselineFrom, lastTimestampYawBaselineFrom;
+	int timestampYawBaselineFrom;
 	double lastVXGain;
 	double lastVYGain;
 	double rotZOffset;

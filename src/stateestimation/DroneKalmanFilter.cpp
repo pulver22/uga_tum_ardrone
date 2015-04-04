@@ -365,9 +365,7 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 	if(!baselinesYValid)	// only for initialization.
 	{
 		baselineY_IMU = nav->rotZ - rotZOffset;
-		baselineY_Filter = yaw.state[0];
 		baselinesYValid = true;
-		lastTimestampYawBaselineFrom = 0;
 		timestampYawBaselineFrom = getMS(nav->header.stamp);
 		lastdYaw = 0;
 	}
@@ -378,52 +376,46 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
         initializedAbsoluteY = true;
 	}
 
-	double imuYawDiff = (nav->rotZ - rotZOffset - baselineY_IMU );
 	double observedYaw = nav->rotZ - rotZOffset;
 
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 
-	if(yaw.state[0] < -90)
+	if(yaw.state[0] < -90) {
 		observedYaw = angleFromTo(observedYaw,-360,0);
-	else if(yaw.state[0] > 90)
+		baselineY_IMU = angleFromTo(baselineY_IMU,-360,0);
+	} else if(yaw.state[0] > 90) {
 		observedYaw = angleFromTo(observedYaw,0,360);
-	else
+		baselineY_IMU = angleFromTo(baselineY_IMU,0,360);
+	} else {
 		observedYaw = angleFromTo(observedYaw,-180,180);
+		baselineY_IMU = angleFromTo(baselineY_IMU,-180,180);
+	}
 
-    double observedYawSpeed = (imuYawDiff) / ((timestampYawBaselineFrom - lastTimestampYawBaselineFrom) / 1000.0);
+	double imuYawDiff = observedYaw - baselineY_IMU;
+    double observedYawSpeed = imuYawDiff / ((getMS(nav->header.stamp) - timestampYawBaselineFrom) / 1000.0);
+
+    baselineY_IMU = observedYaw;
+    timestampYawBaselineFrom = getMS(nav->header.stamp);
 
 	if(lastPosesValid)
 	{
-
-		baselineY_IMU = nav->rotZ - rotZOffset;
-		baselineY_Filter = yaw.state[0];
-		lastTimestampYawBaselineFrom = timestampYawBaselineFrom;
-		timestampYawBaselineFrom = getMS(nav->header.stamp);
-
-
-		if(abs(observedYaw - yaw.state[0]) < 10)
-		{
-			yaw.observePose(observedYaw,2*2);
-			yaw.observeSpeed(observedYawSpeed,2*2);
-			lastdYaw = observedYaw;
-		}
+        if (node->arDroneVersion > 1) // the ARDrone 1.0 doesn't have a magnetometer and so its rotZ will drift over time
+        {                             //  therefore we don't have yaw pose observations, but speed is ok
+            yaw.observePose(observedYaw,2*2);
+        }
+        yaw.observeSpeed(observedYawSpeed,2*2);
 	}
 	else
-		if(abs(observedYaw - yaw.state[0]) < 10)
-		{
-			yaw.observePose(observedYaw,1*1);
-			yaw.observeSpeed(observedYawSpeed,1*1);
-			lastdYaw = observedYaw;
-		}
-		else
-		{
-			baselineY_IMU = nav->rotZ - rotZOffset;
-			baselineY_Filter = yaw.state[0];
-			lastTimestampYawBaselineFrom = timestampYawBaselineFrom;
-			timestampYawBaselineFrom = getMS(nav->header.stamp);
-		}
+	{
+        if (node->arDroneVersion > 1)
+        {
+            yaw.observePose(observedYaw,1*1);
+        }
+        yaw.observeSpeed(observedYawSpeed,1*1);
 
-	last_yaw_IMU = nav->rotZ - rotZOffset;
+	}
+
+    lastdYaw = observedYaw;
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 }
 
