@@ -405,7 +405,8 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
         {                             //  therefore we don't have yaw pose observations, but speed is ok
             yaw.observePose(observedYaw,2*2);
         }
-        yaw.observeSpeed(observedYawSpeed,2*2);
+        if (std::isfinite(observedYawSpeed))
+            yaw.observeSpeed(observedYawSpeed,2*2);
 	}
 	else
 	{
@@ -413,7 +414,8 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
         {
             yaw.observePose(observedYaw,1*1);
         }
-        yaw.observeSpeed(observedYawSpeed,1*1);
+        if (std::isfinite(observedYawSpeed))
+            yaw.observeSpeed(observedYawSpeed,1*1);
 
 	}
 
