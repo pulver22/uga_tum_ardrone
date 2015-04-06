@@ -119,7 +119,9 @@ public:
 		var = (eye(2)-K*H) * var;
 		*/
 		TooN::Vector<2> K = var[0] / (obsVar + var(0,0));	//K is first col = first row of var.
+		double savedSpeed = state[1];
 		state = state + K * (obs - state[0]);
+		state[1] = savedSpeed;
 		TooN::Matrix<2> tmp = TooN::Identity;
 		tmp(0,0) -= K[0];
 		tmp(1,0) -= K[1];
@@ -137,7 +139,9 @@ public:
 		uncertainty = (eye(2)-K*H) * uncertainty;
 		*/
 		TooN::Vector<2> K = var[1] / (obsVar + var(1,1));	//K is second col = second row of var.
+		double savedPos = state[0];
 		state = state + K * (obs - state[1]);
+		state[0] = savedPos;
 		TooN::Matrix<2> tmp = TooN::Identity;
 		tmp(0,1) -= K[0];
 		tmp(1,1) -= K[1];
