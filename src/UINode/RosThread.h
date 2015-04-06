@@ -67,7 +67,8 @@ private:
 	ros::Subscriber joy_sub;
 	ros::Publisher takeoff_pub;
 	ros::Publisher land_pub;
-	ros::Publisher toggleState_pub;
+    ros::Publisher toggleState_pub;
+    ros::Publisher pub_reset;
 	ros::ServiceClient toggleCam_srv;
 	std_srvs::Empty toggleCam_srv_srvs;
 	ros::ServiceClient flattrim_srv;
@@ -85,6 +86,10 @@ private:
 	unsigned int navdataCount;
 	unsigned int joyCount;
 	unsigned int velCount100ms;
+
+    // Update the drone state to find out whether we need to reset or not
+    int drone_state;
+    std_msgs::Empty emp_msg;
 
 	static pthread_mutex_t send_CS;
 public:
@@ -123,6 +128,7 @@ public:
 	void sendToggleState();
 	void sendToggleCam();
 	void sendFlattrim();
+    void sendResetMsg();
 };
 
 #endif /* __ROSTHREAD_H */
