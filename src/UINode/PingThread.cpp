@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "PingThread.h"
 #include "cvd/thread.h"
 #include "ros/ros.h"
@@ -61,7 +61,7 @@ void PingThread::stopSystem()
 double parsePingResult(std::string s)
 {
 	// 20008 bytes from localhost (127.0.0.1): icmp_req=1 ttl=64 time=0.075 ms
-	int pos = s.find("time=");
+	size_t pos = s.find("time=");
 	int found = 0;
 	float ms;
 	if(pos != std::string::npos)

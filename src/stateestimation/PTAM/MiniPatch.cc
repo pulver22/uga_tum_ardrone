@@ -31,13 +31,12 @@ inline int MiniPatch::SSDAtPoint(CVD::BasicImage<CVD::byte> &im, const CVD::Imag
 // Find a patch by searching at FAST corners in an input image
 // If available, a row-corner LUT is used to speed up search through the
 // FAST corners
-bool MiniPatch::FindPatch(CVD::ImageRef &irPos, 
-			  CVD::BasicImage<CVD::byte> &im, 
-			  int nRange, 
+bool MiniPatch::FindPatch(CVD::ImageRef &irPos,
+			  CVD::BasicImage<CVD::byte> &im,
+			  int nRange,
 			  vector<ImageRef> &vCorners,
 			  std::vector<int> *pvRowLUT)
 {
-  ImageRef irCenter = irPos;
   ImageRef irBest;
   int nBestSSD = mnMaxSSD + 1;
   ImageRef irBBoxTL = irPos - ImageRef(nRange, nRange);
@@ -57,7 +56,7 @@ bool MiniPatch::FindPatch(CVD::ImageRef &irPos,
 	nTopRow = (int) pvRowLUT->size() - 1;
       i = vCorners.begin() + (*pvRowLUT)[nTopRow];
     }
-  
+
   for(; i!=vCorners.end(); i++)
     {
       if(i->x < irBBoxTL.x  || i->x > irBBoxBR.x)
@@ -65,7 +64,7 @@ bool MiniPatch::FindPatch(CVD::ImageRef &irPos,
       if(i->y > irBBoxBR.y)
 	break;
       int nSSD = SSDAtPoint(im, *i);
-      
+
       if(nSSD < nBestSSD)
 	{
 	  irBest = *i;
