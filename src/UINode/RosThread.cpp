@@ -80,6 +80,7 @@ void RosThread::velCb(const geometry_msgs::TwistConstPtr vel)
 }
 void RosThread::navdataCb(const ardrone_autonomy::NavdataConstPtr navdataPtr)
 {
+    this->drone_state = navdataPtr->state;
 
 	if(navdataCount%10==0)
 	{
@@ -162,6 +163,10 @@ void RosThread::comCb(const std_msgs::StringConstPtr str)
 	}
 }
 
+void RosThread::sendResetMsg() {
+    pub_reset.publish(emp_msg);
+}
+
 void RosThread::run()
 {
 	std::cout << "Starting ROS Thread" << std::endl;
@@ -187,6 +192,8 @@ void RosThread::run()
 
     toggleCam_srv        = nh_.serviceClient<std_srvs::Empty>(nh_.resolveName("ardrone/togglecam"),1);
     flattrim_srv         = nh_.serviceClient<std_srvs::Empty>(nh_.resolveName("ardrone/flattrim"),1);
+
+    pub_reset = nh_.advertise<std_msgs::Empty>("ardrone/reset", 1); //send robot input on /cmd_vel topic
 
 	ros::Time last = ros::Time::now();
 	ros::Time lastHz = ros::Time::now();
@@ -284,6 +291,11 @@ void RosThread::sendToggleCam()
 void RosThread::sendFlattrim()
 {
 	pthread_mutex_lock(&send_CS);
+
+    if (drone_state <= 1) {
+        sendResetMsg();
+    }
+
 	flattrim_srv.call(flattrim_srv_srvs);
 	pthread_mutex_unlock(&send_CS);
 }
