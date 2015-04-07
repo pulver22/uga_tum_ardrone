@@ -27,7 +27,7 @@ const double varSpeedObservation_xy = 2*2;
 const double varPoseObservation_xy = 0.2*0.2;
 const double varAccelerationError_xy = 8*8;
 
-const double varPoseObservation_z_PTAM = 0.65*0.65;
+const double varPoseObservation_z_PTAM = 0.3*0.3;
 const double varPoseObservation_z_IMU = 0.25*0.25;
 const double varPoseObservation_z_IMU_NO_PTAM = 0.1*0.1;
 const double varAccelerationError_z = 1*1;
@@ -443,14 +443,14 @@ void DroneKalmanFilter::observePTAM(TooN::Vector<6> pose)
 
 	if(offsets_xyz_initialized)
 	{
-		x.observePose(pose[0],varPoseObservation_xy);
-		y.observePose(pose[1],varPoseObservation_xy);
+		x.observePose(pose[0],varPoseObservation_xy*scale_from_xy);
+		y.observePose(pose[1],varPoseObservation_xy*scale_from_xy);
 	}
 
 	// observe z
 	if(offsets_xyz_initialized)
 	{
-		z.observePose(pose[2], varPoseObservation_z_PTAM);
+		z.observePose(pose[2], varPoseObservation_z_PTAM*scale_from_z);
 	}
 
 	// observe!
