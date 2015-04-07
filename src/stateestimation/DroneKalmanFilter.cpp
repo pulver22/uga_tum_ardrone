@@ -27,7 +27,7 @@ const double varSpeedObservation_xy = 2*2;
 const double varPoseObservation_xy = 0.2*0.2;
 const double varAccelerationError_xy = 8*8;
 
-const double varPoseObservation_z_PTAM = 0.08*0.08;
+const double varPoseObservation_z_PTAM = 0.65*0.65;
 const double varPoseObservation_z_IMU = 0.25*0.25;
 const double varPoseObservation_z_IMU_NO_PTAM = 0.1*0.1;
 const double varAccelerationError_z = 1*1;
@@ -193,7 +193,6 @@ void DroneKalmanFilter::clearPTAM()
 }
 
 
-
 // this function does the actual work, predicting one timestep ahead.
 void DroneKalmanFilter::predictInternal(geometry_msgs::Twist activeControlInfo, int timeSpanMicros, bool useControlGains)
 {
@@ -222,10 +221,10 @@ void DroneKalmanFilter::predictInternal(geometry_msgs::Twist activeControlInfo, 
 	double rollRad = roll.state * 3.14159268 / 180;
 	double pitchRad = pitch.state * 3.14159268 / 180;
 
-	double vz_gain = tsSeconds * c7 * (c8*activeControlInfo.linear.z - z.state[1]);
+	double vz_gain = tsSeconds * c7 * (c8*activeControlInfo.linear.z - z.state[1]) * fabs(cos(rollRad)*cos(yawRad));
 
-	double accelX = (cos(yawRad) * tan(rollRad) * (9.8 + vz_gain) - sin(yawRad) * tan(pitchRad ) * (9.8 + vz_gain)) / 0.436; // X is left-right (global)
-	double accelY = (- sin(yawRad) * tan(rollRad) * (9.8 + vz_gain) - cos(yawRad) * tan(pitchRad) * (9.8 + vz_gain)) / 0.436; // Y is front-back (global)
+	double accelX = (cos(yawRad) * tan(rollRad) * (9.8 + vz_gain) - sin(yawRad) * tan(pitchRad ) * (9.8 + vz_gain)); // X is left-right (global)
+	double accelY = (- sin(yawRad) * tan(rollRad) * (9.8 + vz_gain) - cos(yawRad) * tan(pitchRad) * (9.8 + vz_gain)); // Y is front-back (global)
 
 
 	double vx_gain = tsSeconds * c1 * (c2*accelX);
@@ -248,6 +247,7 @@ void DroneKalmanFilter::predictInternal(geometry_msgs::Twist activeControlInfo, 
 	pitch.predict(tsMillis,varSpeedError_rp, pitchControlGain);
 	yaw.predict(tsMillis,varAccelerationError_yaw,TooN::makeVector(tsSeconds*yawSpeedControlGain/2,yawSpeedControlGain),1,5*5);
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
+
 
 	x.predict(tsMillis,varAccelerationError_xy,TooN::makeVector(tsSeconds*vx_gain/2,vx_gain),0.0001);
 	y.predict(tsMillis,varAccelerationError_xy,TooN::makeVector(tsSeconds*vy_gain/2,vy_gain),0.0001);
@@ -741,15 +741,10 @@ void DroneKalmanFilter::predictUpTo(int timestamp, bool consume, bool useControl
 		if(xyzIterator != navdataQueue->end() )
 			predictTo = min(predictTo, getMS(xyzIterator->header.stamp)-delayXYZ);
 
-
-
-
 		predictInternal(useControlGains ? controlIterator->twist : geometry_msgs::Twist(),
 				(predictTo - predictdUpToTimestamp)*1000,
 				useControlGains &&
 				getMS(controlIterator->header.stamp) + 200 > predictdUpToTimestamp - delayControl);				// control max. 200ms old.
-
-		//cout << " " << (predictTo - predictdUpToTimestamp);
 
 		// if an observation needs to be added, it HAS to have a stamp equal to [predictTo],
 		// as we just set [predictTo] to that timestamp.
@@ -798,7 +793,6 @@ void DroneKalmanFilter::predictUpTo(int timestamp, bool consume, bool useControl
 		if(predictTo == timestamp)
 			break;
 	}
-	//cout << endl;
 }
 
 
@@ -950,6 +944,7 @@ void DroneKalmanFilter::addFakePTAMObservation(int time)
 }
 tum_ardrone::filter_state DroneKalmanFilter::getPoseAt(ros::Time t, bool useControlGains)
 {
+
 	// make shallow copy
 	DroneKalmanFilter scopy = DroneKalmanFilter(*this);
 

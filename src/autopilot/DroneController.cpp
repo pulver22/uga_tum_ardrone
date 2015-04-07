@@ -25,6 +25,10 @@
 #include "../HelperFunctions.h"
 #include "ControlNode.h"
 
+int sgn(double val) {
+    return (0 < val) - (val < 0);
+}
+
 DroneController::DroneController(void)
 {
 	target = DronePosition(TooN::makeVector(0.0,0.0,0.0),0.0);
@@ -73,13 +77,27 @@ ControlCommand DroneController::update(tum_ardrone::filter_stateConstPtr state)
 	TooN::Vector<4> d_err = TooN::makeVector(-speeds[0], -speeds[1], -speeds[2], -speeds[3]);
 
 	if(targetValid)
-		calcControl(new_err, d_err, yaw);
+		calcControl(new_err, d_err, yaw, state->pitch, state->roll);
 	else
 	{
 		lastSentControl = hoverCommand;
 		ROS_WARN("Warning: no valid target, sending hover.");
 	}
 
+    if(node->logfileControl != NULL)
+	{
+		pthread_mutex_lock(&node->logControl_CS);
+		if(node->logfileControl != NULL)
+        {
+			(*(node->logfileControl)) << lastTimeStamp << " ";
+
+			for( int i = 0; i < logInfo.size(); i++)
+                (*(node->logfileControl)) << logInfo[i] << " ";
+
+            (*(node->logfileControl)) << "\n";
+        }
+		pthread_mutex_unlock(&node->logControl_CS);
+	}
 	last_err = new_err;
 	return lastSentControl;
 }
@@ -93,6 +111,7 @@ void DroneController::setTarget(DronePosition newTarget)
 	targetNew = TooN::makeVector(1.0,1.0,1.0,1.0);
 	targetValid = true;
 	last_err = i_term = TooN::makeVector(0,0,0,0);
+    lastTimeStamp = getMS()/1000.0 - 0.03; // prevent deltaT from being 0
 
 	char buf[200];
 	snprintf(buf,200,"New Target: xyz = %.3f, %.3f, %.3f,  yaw=%.3f", target.pos[0],target.pos[1],target.pos[2],target.yaw);
@@ -126,7 +145,7 @@ void i_term_increase(double& i_term, double new_err, double cap)
 	if(i_term < -cap) i_term =  -cap;
 }
 
-void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_velocity, double yaw)
+void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_velocity, double yaw, double pitch, double roll)
 {
 
 	float agr = agressiveness;
@@ -142,12 +161,13 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
 
 	// rotate error to drone CS, invert pitch
 	double yawRad = yaw * 2 * 3.141592 / 360;
+	double pitchRad = pitch * 2 * 3.141592 / 360;
+	double rollRad = roll * 2 * 3.141592 / 360;
 	vel_term[0] = cos(yawRad)*new_velocity[0] - sin(yawRad)*new_velocity[1];
 	vel_term[1] = - sin(yawRad)*new_velocity[0] - cos(yawRad)*new_velocity[1];
 
 	p_term[0] = cos(yawRad)*new_err[0] - sin(yawRad)*new_err[1];
 	p_term[1] = - sin(yawRad)*new_err[0] - cos(yawRad)*new_err[1];
-
 
 
     // calculate the damping coefficient assuming critically damped
@@ -171,33 +191,51 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     double totalForceYaw = (springForceYaw - dampingForceYaw) * .517;
     double totalForceGaz = springForceGaz - dampingForceGaz;
 
+    totalForceGaz = std::max((-9.8 * droneMassInKilos) *0.8, totalForceGaz); // the drone can't actually accelerate down, gravity does this.
+                            // and we still need the engines available to provide pitch/roll control, don't shut them down completely
 
     // Integrate for yaw and gaz control
 	double deltaT = getMS()/1000.0 - lastTimeStamp; lastTimeStamp = getMS()/1000.0;
 
-    double deltaYaw = totalForceYaw / droneMassInKilos * deltaT / 2;
-    double deltaGaz = totalForceGaz / droneMassInKilos * deltaT / 2;
+	if (deltaT > 0.2) // guard against crazy timestamps
+        deltaT = 0.2;
 
-    // The new commands
-	lastSentControl.roll = atan(totalForceRoll / (9.8 * droneMassInKilos + totalForceGaz)) / max_rp_radians;
-	lastSentControl.pitch = atan(totalForcePitch / (9.8 * droneMassInKilos + totalForceGaz)) / max_rp_radians;
-	lastSentControl.yaw = ((new_velocity[3] + deltaYaw) * (2 * 3.141592 / 360)) / 1.66;	// yaw can be translated directly, command is 1.0 = 1.66 rads/second
-	lastSentControl.gaz = new_velocity[2] + deltaGaz;	// gaz can be translated directly
+    double deltaYaw = deltaT * (totalForceYaw / droneMassInKilos) / 2;
+    double deltaGaz = deltaT * (totalForceGaz / droneMassInKilos) / 2;
+
+    // the new gaz command
+	lastSentControl.gaz = -new_velocity[2] + deltaGaz;	// gaz can be translated directly
+	lastSentControl.gaz = std::min(max_gaz_rise,std::max(max_gaz_drop, (double)(lastSentControl.gaz)));
+
+    double clippedZForce = std::max((-9.8 * droneMassInKilos)*0.8, (2 * (lastSentControl.gaz + new_velocity[2]) / deltaT) * droneMassInKilos);
+
+    // how much force do the motors actually generate? need to remove gravity from this
+    double appliedEngineForce = (clippedZForce + 9.8 * droneMassInKilos) / (fabs(cos(pitchRad) * cos(rollRad)));
+
+    if (fabs(totalForceRoll) > fabs(appliedEngineForce))
+        totalForceRoll = fabs(appliedEngineForce)*sgn(totalForceRoll);
+
+    if (fabs(totalForcePitch) > fabs(appliedEngineForce))
+        totalForcePitch = fabs(appliedEngineForce)*sgn(totalForcePitch);
+
+    // The new rotation commands
+	lastSentControl.roll = (1.57 - acos(totalForceRoll / appliedEngineForce)) / max_rp_radians;
+	lastSentControl.pitch = (1.57 - acos(totalForcePitch / appliedEngineForce)) / max_rp_radians;
+	lastSentControl.yaw = ((-new_velocity[3] + deltaYaw) * (2 * 3.141592 / 360)) / 1.66;	// yaw can be translated directly, command is 1.0 = 1.66 rads/second
 
 	// clip
 	lastSentControl.roll = std::min(max_rp,std::max(-max_rp,(double)(lastSentControl.roll)));
 	lastSentControl.pitch = std::min(max_rp,std::max(-max_rp,(double)(lastSentControl.pitch)));
 	lastSentControl.yaw = std::min(max_yaw,std::max(-max_yaw,(double)(lastSentControl.yaw)));
-	lastSentControl.gaz = std::min(max_gaz_rise/rise_fac,std::max(max_gaz_drop, (double)(lastSentControl.gaz)));
 
 
 	logInfo = TooN::makeVector(
 		springForceRoll, springForcePitch, springForceGaz, springForceYaw,
         dampingForceRoll, dampingForcePitch, dampingForceGaz, dampingForceYaw,
-		deltaT, deltaYaw, deltaGaz, new_velocity[2],
-		new_velocity[3], p_term[0], p_term[1], 0,
+		deltaT, deltaYaw, deltaGaz, new_velocity[0], new_velocity[1], new_velocity[2],
+		new_velocity[3], new_err[2], new_err[3], clippedZForce,
 		lastSentControl.roll, lastSentControl.pitch, lastSentControl.gaz, lastSentControl.yaw,
-		new_err[0],new_err[1],new_err[2],new_err[3],
+		appliedEngineForce,yawRad,pitchRad,rollRad,
 		target.pos[0],target.pos[1],target.pos[2],target.yaw
 		);
 }

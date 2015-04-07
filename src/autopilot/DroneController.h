@@ -82,7 +82,7 @@ private:
 	// filled with info (on update)
 	bool  ptamIsGood;
 	double scaleAccuracy;
-	void calcControl(TooN::Vector<4> new_err, TooN::Vector<4> d_error, double yaw);
+	void calcControl(TooN::Vector<4> new_err, TooN::Vector<4> d_error, double yaw, double pitch, double roll);
 
 public:
 
@@ -92,7 +92,7 @@ public:
 	ControlNode* node;
 
 	// for logging, gets filled with recent infos on control.
-	TooN::Vector<28> logInfo;
+	TooN::Vector<30> logInfo;
 
 	// adds a waypoint
 	void setTarget(DronePosition newTarget);
