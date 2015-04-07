@@ -20,10 +20,10 @@
  */
 #ifndef __TUMARDRONEGUI_H
 #define __TUMARDRONEGUI_H
- 
- 
- 
- 
+
+
+
+
 #include <QtGui/QWidget>
 #include "ui_tum_ardrone_gui.h"
 #include "geometry_msgs/Twist.h"
@@ -48,7 +48,7 @@ public slots:
 	void SendClicked();
 	void ClearSendClicked();
 	void ResetClicked();
-	void FlattrimClicked();
+	void FlatTrimClicked();
 
 	void LoadFileChanged(QString val);
 	void ToggledUseHovering(int val);

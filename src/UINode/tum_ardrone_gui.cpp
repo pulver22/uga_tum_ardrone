@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "tum_ardrone_gui.h"
 #include "RosThread.h"
 #include "PingThread.h"
@@ -123,7 +123,7 @@ void tum_ardrone_gui::ToggleCamClicked()
 {
 	rosThread->sendToggleCam();
 }
-void tum_ardrone_gui::FlattrimClicked()
+void tum_ardrone_gui::FlatTrimClicked()
 {
 	rosThread->sendFlattrim();
 }
