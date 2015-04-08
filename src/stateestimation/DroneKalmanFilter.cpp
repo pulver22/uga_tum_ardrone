@@ -299,13 +299,18 @@ void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
 		ROS_WARN("detected large y jump. removing. should not happen usually (only e.g. if no navdata for a long time, or agressive re-scaling)");
 	}
 
+	// transform the drone's sonar reading into a z reading (height above the ground plane)
+	double z_obs  = nav->altd * 0.001 / sqrt(1.0 + (tan(roll.state * 3.14159268 / 180)*tan(roll.state * 3.14159268 / 180)) \
+                                  + (tan(pitch.state * 3.14159268 / 180)*tan(pitch.state * 3.14159268 / 180)) );
+
+
 	// height is a bit more complicated....
 	// only update every 8 packages, or if changed.
-	if(last_z_IMU != nav->altd || nav->header.seq - last_z_packageID > 8)
+	if(last_z_IMU != z_obs || nav->header.seq - last_z_packageID > 8)
 	{
 		if(baselineZ_Filter < -100000)	// only for initialization.
 		{
-			baselineZ_IMU = nav->altd;
+			baselineZ_IMU = z_obs;
 			baselineZ_Filter = z.state[0];
 		}
 
@@ -314,11 +319,11 @@ void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
 		if(lastPosesValid)
 		{
 
-			double imuHeightDiff = (nav->altd - baselineZ_IMU )*0.001;	// TODO negative heights??
+			double imuHeightDiff = (z_obs - baselineZ_IMU );	// TODO negative heights??
 			double observedHeight = baselineZ_Filter + 0.5*(imuHeightDiff + last_z_heightDiff);
 			last_z_heightDiff = imuHeightDiff;
 
-			baselineZ_IMU = nav->altd;
+			baselineZ_IMU = z_obs;
 			baselineZ_Filter = z.state[0];
 
 			if((abs(imuHeightDiff) < 0.150 && abs(last_z_heightDiff) < 0.150))	// jumps of more than 150mm in 40ms are ignored
@@ -329,7 +334,7 @@ void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
 		}
 		else
 		{
-			double imuHeightDiff = (nav->altd - baselineZ_IMU )*0.001;
+			double imuHeightDiff = (z_obs - baselineZ_IMU );
 			double observedHeight = baselineZ_Filter + imuHeightDiff;
 
 			if(abs(imuHeightDiff) < 0.110)	// jumps of more than 150mm in 40ms are ignored
@@ -345,12 +350,12 @@ void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
 					z.observeSpeed(0,0);
 				}
 
-				baselineZ_IMU = nav->altd;
+				baselineZ_IMU = z_obs;
 				baselineZ_Filter = z.state[0];
 			}
 		}
 
-		last_z_IMU = nav->altd;
+		last_z_IMU = z_obs;
 		last_z_packageID = nav->header.seq;
 	}
 
