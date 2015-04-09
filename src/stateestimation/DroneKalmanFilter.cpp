@@ -300,9 +300,11 @@ void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
 	}
 
 	// transform the drone's sonar reading into a z reading (height above the ground plane)
-	double z_obs  = nav->altd * 0.001 / sqrt(1.0 + (tan(roll.state * 3.14159268 / 180)*tan(roll.state * 3.14159268 / 180)) \
+	double z_obs = nav->altd * 0.001 / sqrt(1.0 + (tan(roll.state * 3.14159268 / 180)*tan(roll.state * 3.14159268 / 180)) \
                                   + (tan(pitch.state * 3.14159268 / 180)*tan(pitch.state * 3.14159268 / 180)) );
 
+    if (! std::isfinite(z_obs))
+        z_obs = nav->altd * 0.001;
 
 	// height is a bit more complicated....
 	// only update every 8 packages, or if changed.
