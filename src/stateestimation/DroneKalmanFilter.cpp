@@ -221,8 +221,8 @@ void DroneKalmanFilter::predictInternal(geometry_msgs::Twist activeControlInfo, 
 
 	double vz_gain = tsSeconds * c7 * (c8*activeControlInfo.linear.z - z.state[1]) /** fabs(cos(rollRad)*cos(yawRad)) */;
 
-	double accelX = (cos(yawRad) * tan(rollRad) * (9.8 + vz_gain) - sin(yawRad) * tan(pitchRad) * (9.8 + vz_gain)); // X is left-right (global)
-	double accelY = (-sin(yawRad) * tan(rollRad) * (9.8 + vz_gain) - cos(yawRad) * tan(pitchRad) * (9.8 + vz_gain)); // Y is front-back (global)
+	double accelX = (cos(yawRad) * tan(rollRad) * (9.8 /*+ vz_gain*/) - sin(yawRad) * tan(pitchRad) * (9.8 /*+ vz_gain)*/); // X is left-right (global)
+	double accelY = (-sin(yawRad) * tan(rollRad) * (9.8 /*+ vz_gain*/) - cos(yawRad) * tan(pitchRad) * (9.8 /*+ vz_gain*/)); // Y is front-back (global)
 
 	double vx_gain = tsSeconds * c1 * (c2*accelX);
 	double vy_gain = tsSeconds * c1 * (c2*accelY);
