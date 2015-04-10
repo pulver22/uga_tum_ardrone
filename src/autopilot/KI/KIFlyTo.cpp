@@ -17,14 +17,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "KIFlyTo.h"
 #include "../DroneController.h"
 #include "../ControlNode.h"
 #include "../../HelperFunctions.h"
 
 
-KIFlyTo::KIFlyTo(DronePosition checkpointP, 
+KIFlyTo::KIFlyTo(DronePosition checkpointP,
 		double stayTime,
 		double maxControlFactorP,
 		double initialReachedDistP,
@@ -39,7 +39,7 @@ KIFlyTo::KIFlyTo(DronePosition checkpointP,
 
 	reachedAtClock = -1;
 	reached = false;
-	
+
 	targetSet = false;
 
 	isCompleted = false;
@@ -69,7 +69,7 @@ bool KIFlyTo::update(const tum_ardrone::filter_stateConstPtr statePtr)
 	}
 	if(isCompleted)
 	{
-		node->sendControlToDrone(controller->update(statePtr));
+		node->sendControlToDrone(node->hoverCommand);
 		return true;
 	}
 

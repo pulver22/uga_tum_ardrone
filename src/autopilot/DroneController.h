@@ -123,6 +123,7 @@ public:
 	double max_gaz_drop;
 	double max_yaw;
 	double max_rp;
+	double xy_damping_factor;
 };
 #endif /* __DRONECONTROLLER_H */
 

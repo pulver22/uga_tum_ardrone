@@ -385,6 +385,7 @@ void ControlNode::dynConfCb(tum_ardrone::AutopilotParamsConfig &config, uint32_t
 	controller.max_yaw = config.max_yaw;
 	controller.agressiveness = config.agressiveness;
 	controller.rise_fac = config.rise_fac;
+    controller.xy_damping_factor = config.xy_damping_factor;
 
 }
 

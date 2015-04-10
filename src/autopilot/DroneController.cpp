@@ -173,7 +173,7 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     // calculate the damping coefficient assuming critically damped
     double c_direct = 2 * sqrt( K_direct * 50 * droneMassInKilos );
     double c_direct_agr = 2 * sqrt( K_direct_agr * droneMassInKilos );
-    double c_rp = 2 * sqrt( K_rp_agr * droneMassInKilos );
+    double c_rp = xy_damping_factor * 2 * sqrt( K_rp_agr * droneMassInKilos );
 
 
     // find target forces given the current state
