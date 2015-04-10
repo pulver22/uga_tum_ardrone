@@ -171,24 +171,25 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
 
 
     // calculate the damping coefficient assuming critically damped
-    double c_direct = 2 * sqrt( K_direct_agr * droneMassInKilos );
+    double c_direct = 2 * sqrt( K_direct * 50 * droneMassInKilos );
+    double c_direct_agr = 2 * sqrt( K_direct_agr * droneMassInKilos );
     double c_rp = 2 * sqrt( K_rp_agr * droneMassInKilos );
 
 
     // find target forces given the current state
     double springForceRoll = K_rp_agr * p_term[0];
     double springForcePitch = K_rp_agr * p_term[1];
-    double springForceYaw = K_direct_agr * new_err[3];
+    double springForceYaw = K_direct * 50 * new_err[3];
     double springForceGaz = K_direct_agr * new_err[2];
 
     double dampingForceRoll = c_rp * -vel_term[0];
     double dampingForcePitch = c_rp * -vel_term[1];
     double dampingForceYaw = c_direct * -new_velocity[3];
-    double dampingForceGaz = c_direct * -new_velocity[2];
+    double dampingForceGaz = c_direct_agr * -new_velocity[2];
 
     double totalForceRoll = springForceRoll - dampingForceRoll;
     double totalForcePitch = springForcePitch - dampingForcePitch;
-    double totalForceYaw = (springForceYaw - dampingForceYaw) * .517;
+    double totalForceYaw = springForceYaw - dampingForceYaw;
     double totalForceGaz = springForceGaz - dampingForceGaz;
 
     totalForceGaz = std::max((-9.8 * droneMassInKilos) *0.8, totalForceGaz); // the drone can't actually accelerate down, gravity does this.
@@ -210,7 +211,7 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     double clippedZForce = std::max((-9.8 * droneMassInKilos)*0.8, (2 * (lastSentControl.gaz + new_velocity[2]) / deltaT) * droneMassInKilos);
 
     // how much force do the motors actually generate? need to remove gravity from this
-    double appliedEngineForce = (clippedZForce + 9.8 * droneMassInKilos) / (fabs(cos(pitchRad) * cos(rollRad)));
+    double appliedEngineForce = ((clippedZForce > 0 ? clippedZForce : 0) + 9.8 * droneMassInKilos) / (fabs(cos(pitchRad) * cos(rollRad)));
 
     if (fabs(totalForceRoll) > fabs(appliedEngineForce))
         totalForceRoll = fabs(appliedEngineForce)*sgn(totalForceRoll);

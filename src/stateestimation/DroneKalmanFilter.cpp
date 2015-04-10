@@ -36,7 +36,7 @@ const double varPoseObservation_rp_PTAM = 3*3;
 const double varPoseObservation_rp_IMU = 1*1;
 const double varSpeedError_rp = 360*360 * 16;	// increased because prediction based on control command is damn inaccurate.
 
-const double varSpeedObservation_yaw = 5*5;
+const double varSpeedObservation_yaw = 50*50;
 const double varPoseObservation_yaw = 3*3;
 const double varAccelerationError_yaw = 360*360;
 
@@ -410,19 +410,19 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 	{
         if (node->arDroneVersion > 1) // the ARDrone 1.0 doesn't have a magnetometer and so its rotZ will drift over time
         {                             //  therefore we don't have yaw pose observations, but speed is ok
-            yaw.observePose(observedYaw,2*2);
+            yaw.observePose(observedYaw,1*1);
         }
         if (std::isfinite(observedYawSpeed))
-            yaw.observeSpeed(observedYawSpeed,2*2);
+            yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw);
 	}
 	else
 	{
         if (node->arDroneVersion > 1)
         {
-            yaw.observePose(observedYaw,1*1);
+            yaw.observePose(observedYaw,.5*.5);
         }
         if (std::isfinite(observedYawSpeed))
-            yaw.observeSpeed(observedYawSpeed,1*1);
+            yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw/2);
 
 	}
 
