@@ -69,7 +69,7 @@ bool KIFlyTo::update(const tum_ardrone::filter_stateConstPtr statePtr)
 	}
 	if(isCompleted)
 	{
-		node->sendControlToDrone(node->hoverCommand);
+		node->sendControlToDrone(controller->update(statePtr));
 		return true;
 	}
 
