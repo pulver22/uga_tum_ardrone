@@ -447,14 +447,14 @@ void DroneKalmanFilter::observePTAM(TooN::Vector<6> pose)
 
 	if(offsets_xyz_initialized)
 	{
-		x.observePose(pose[0],varPoseObservation_xy*scale_from_xy*5);
-		y.observePose(pose[1],varPoseObservation_xy*scale_from_xy);
+		x.observePose(pose[0],varPoseObservation_xy);
+		y.observePose(pose[1],varPoseObservation_xy);
 	}
 
 	// observe z
 	if(offsets_xyz_initialized)
 	{
-		z.observePose(pose[2], varPoseObservation_z_PTAM*scale_from_z);
+		z.observePose(pose[2], varPoseObservation_z_PTAM);
 	}
 
 	// observe!
