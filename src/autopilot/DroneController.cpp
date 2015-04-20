@@ -81,7 +81,6 @@ ControlCommand DroneController::update(tum_ardrone::filter_stateConstPtr state)
 	else
 	{
 		lastSentControl = hoverCommand;
-		ROS_WARN("Warning: no valid target, sending hover.");
 	}
 
     if(node->logfileControl != NULL)
