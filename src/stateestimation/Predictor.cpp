@@ -17,9 +17,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
- 
- 
+
+
+
 #include "Predictor.h"
 #include "../HelperFunctions.h"
 
@@ -94,7 +94,7 @@ void Predictor::setPosSE3_droneToGlobal(TooN::SE3<double> newDroneToGlobal)
 {
 	droneToGlobal = newDroneToGlobal;
 	globaltoDrone = droneToGlobal.inverse();
-	
+
 	x = droneToGlobal.get_translation()[0];
 	y = droneToGlobal.get_translation()[1];
 	z = droneToGlobal.get_translation()[2];
@@ -119,19 +119,26 @@ void Predictor::predictOneStep(ardrone_autonomy::Navdata* nfo)
 	double dxDrone = nfo->vx * timespan / 1000000000;	// in meters
 	double dyDrone = nfo->vy * timespan / 1000000000;	// in meters
 
-	double yawRad = (nfo->rotZ/1000.0) / (180.0/3.1415);
+	double yawRad = (nfo->rotZ/1000.0) * 3.1415/180.0;
 	x += sin(yawRad)*dxDrone+cos(yawRad)*dyDrone;
 	y += cos(yawRad)*dxDrone-sin(yawRad)*dyDrone;
 
+    double alt = (nfo->altd*0.001) / sqrt(1.0 + (tan(nfo->rotX * 3.14159268 / 180)*tan(nfo->rotX * 3.14159268 / 180)) \
+                                  + (tan(nfo->rotY * 3.14159268 / 180)*tan(nfo->rotY * 3.14159268 / 180)) );
+
+
+    if (! std::isfinite(alt))
+        alt = nfo->altd * 0.001;
+
 	// height
-	if(abs(z - (double)nfo->altd*0.001) > 0.12)
+	if(abs(z - alt) > 0.12)
 	{
-		if(std::abs(z - (double)nfo->altd*0.001) > abs(zCorruptedJump))
-			zCorruptedJump = z - (double)nfo->altd*0.001;
+		if(std::abs(z - alt) > abs(zCorruptedJump))
+			zCorruptedJump = z - alt;
 		zCorrupted = true;
 	}
 
-	z = nfo->altd*0.001;
+	z = alt;
 
 	// angles
 	roll = nfo->rotX/1000.0;
