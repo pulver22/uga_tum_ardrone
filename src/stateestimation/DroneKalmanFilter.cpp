@@ -377,7 +377,7 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 	}
 
 	if (!initializedAbsoluteY && nav->state > 2 && nav->state < 7) {
-        rotZOffset = nav->rotZ;
+        rotZOffset = node->initialYaw + nav->rotZ;
         baselineY_IMU = 0;
         initializedAbsoluteY = true;
 	}
