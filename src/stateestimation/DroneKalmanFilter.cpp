@@ -271,17 +271,9 @@ void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
 	// to simulate "integrating up".
 	double lastX = x.state[0];
 	double lastY = y.state[0];
-	if(lastPosesValid)
-	{
-		x.observeSpeed(vx_global,varSpeedObservation_xy*50);
-		y.observeSpeed(vy_global,varSpeedObservation_xy*50);
-	}
-	else
-	{
-		x.observeSpeed(vx_global,varSpeedObservation_xy);
-		y.observeSpeed(vy_global,varSpeedObservation_xy);
-	}
 
+	x.observeSpeed(vx_global,varSpeedObservation_xy);
+	y.observeSpeed(vy_global,varSpeedObservation_xy);
 
 
 	if(abs(lastX-x.state[0]) > 0.2 && lastX != 0)

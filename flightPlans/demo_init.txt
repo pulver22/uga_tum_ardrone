@@ -1,5 +1,5 @@
 setInitialYaw 0
-autoInit 1000 800 6000 0.5
+autoInit 500 800 6000 0.5
 
 setReference 0 0 0 0
 setInitialReachDist 0.2
