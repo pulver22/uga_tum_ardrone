@@ -118,10 +118,8 @@ public:
 		state = state + K * (obs - H*state);
 		var = (eye(2)-K*H) * var;
 		*/
-		TooN::Vector<2> K = var[0] / (obsVar + var(0,0));	//K is first col = first row of var.
-		double savedSpeed = state[1];
+		TooN::Vector<2> K = var.T()[0] / (obsVar + var(0,0));	//K is first col = first row of var.
 		state = state + K * (obs - state[0]);
-		state[1] = savedSpeed;
 		TooN::Matrix<2> tmp = TooN::Identity;
 		tmp(0,0) -= K[0];
 		tmp(1,0) -= K[1];
@@ -138,10 +136,8 @@ public:
 		state = state + K * (observation - H*state);
 		uncertainty = (eye(2)-K*H) * uncertainty;
 		*/
-		TooN::Vector<2> K = var[1] / (obsVar + var(1,1));	//K is second col = second row of var.
-		double savedPos = state[0];
+		TooN::Vector<2> K = var.T()[1] / (obsVar + var(1,1));	//K is second col = second row of var.
 		state = state + K * (obs - state[1]);
-		state[0] = savedPos;
 		TooN::Matrix<2> tmp = TooN::Identity;
 		tmp(0,1) -= K[0];
 		tmp(1,1) -= K[1];
@@ -168,9 +164,9 @@ public:
 		state = G * state + controlGains;
 		var  = G * var * G.T();
 		var(0,0) += accelerationVar * 0.25 * ms*ms*ms*ms;
-		var(1,0) += coVarFac * accelerationVar * 0.5 * ms*ms*ms * 4;
-		var(0,1) += coVarFac * accelerationVar * 0.5 * ms*ms*ms * 4;
-		var(1,1) += speedVarFac * accelerationVar * 1 * ms*ms * 4 * 4;
+		var(1,0) += coVarFac * accelerationVar * 0.5 * ms*ms*ms;
+		var(0,1) += coVarFac * accelerationVar * 0.5 * ms*ms*ms;
+		var(1,1) += speedVarFac * accelerationVar * 1 * ms*ms;
 	}
 
 	// predict
@@ -281,7 +277,7 @@ private:
 	int numGoodPTAMObservations;
 
 	// parameters used for adding / timing
-	long lastIMU_XYZ_dronetime;
+	double lastIMU_XYZ_dronetime;
 	long lastIMU_RPY_dronetime;
 	long lastIMU_dronetime;
 	int lastIMU_XYZ_ID;
