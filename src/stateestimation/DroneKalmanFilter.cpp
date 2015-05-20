@@ -305,33 +305,25 @@ void DroneKalmanFilter::observeIMU_XYZ (const ardrone_autonomy::Navdata* nav)
 
     if(abs(z_obs - baselineZ_IMU) < 0.150)	// jumps of more than 150mm in 40ms are ignored
     {
-        if (lastPosesValid) {
-            z.observePose(baselineZ_Filter + z_obs - baselineZ_IMU,varPoseObservation_z_IMU);
-
-            if(lastIMU_XYZ_dronetime > 0)
-            {
-                z.observeSpeed((z.state[0] - baselineZ_Filter) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU*10);
-            }
+        if (lastPosesValid) {  // we can't use the z_obs at face value because the sonar might have bounced off something other than the ground
+            z.observePose(baselineZ_Filter + z_obs - baselineZ_IMU,varPoseObservation_z_IMU); // This could also be solved with a large variance, but this is adequate for the ardrone's short flights
 
         } else {
             if (numGoodPTAMObservations == 0 || nav->state <= 2) {
                 z.observePose(z_obs,varPoseObservation_z_IMU_NO_PTAM); // before PTAM initialization, or has landed
 
-                if(lastIMU_XYZ_dronetime > 0)
-                {
-                    z.observeSpeed((z_obs - baselineZ_IMU) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU_NO_PTAM*10);
-                }
             } else {  // PTAM is lost
                 z.observePose(baselineZ_Filter + z_obs - baselineZ_IMU,varPoseObservation_z_IMU_NO_PTAM);
-
-                if(lastIMU_XYZ_dronetime > 0)
-                {
-                    z.observeSpeed((z.state[0] - baselineZ_Filter) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU_NO_PTAM*10);
-                }
 
             }
 
         }
+
+        if(lastIMU_XYZ_dronetime > 0)
+        {
+            z.observeSpeed((z_obs - baselineZ_IMU) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU*10);
+        }
+
     }
 
     baselineZ_IMU = z_obs;
