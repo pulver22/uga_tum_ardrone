@@ -254,7 +254,7 @@ void DroneKalmanFilter::predictInternal(geometry_msgs::Twist activeControlInfo, 
 
 
 
-void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
+void DroneKalmanFilter::observeIMU_XYZ (const ardrone_autonomy::Navdata* nav)
 {
 
 	// --------------- now: update  ---------------------------
@@ -295,60 +295,49 @@ void DroneKalmanFilter::observeIMU_XYZ(const ardrone_autonomy::Navdata* nav)
     if (! std::isfinite(z_obs))
         z_obs = nav->altd * 0.001;
 
-	// height is a bit more complicated....
-	// only update every 8 packages, or if changed.
-	if(last_z_IMU != z_obs || nav->header.seq - last_z_packageID > 8)
-	{
-		if(baselineZ_Filter < -100000)	// only for initialization.
-		{
-			baselineZ_IMU = z_obs;
-			baselineZ_Filter = z.state[0];
-		}
 
 
+    if(baselineZ_Filter < -100000)	// only for initialization.
+    {
+        baselineZ_IMU = z_obs;
+        baselineZ_Filter = z.state[0];
+    }
 
-		if(lastPosesValid)
-		{
+    if(abs(z_obs - baselineZ_IMU) < 0.150)	// jumps of more than 150mm in 40ms are ignored
+    {
+        if (lastPosesValid) {
+            z.observePose(baselineZ_Filter + z_obs - baselineZ_IMU,varPoseObservation_z_IMU);
 
-			double imuHeightDiff = (z_obs - baselineZ_IMU );	// TODO negative heights??
-			double observedHeight = baselineZ_Filter + 0.5*(imuHeightDiff + last_z_heightDiff);
-			last_z_heightDiff = imuHeightDiff;
+            if(lastIMU_XYZ_dronetime > 0)
+            {
+                z.observeSpeed((z.state[0] - baselineZ_Filter) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU*10);
+            }
 
-			baselineZ_IMU = z_obs;
-			baselineZ_Filter = z.state[0];
+        } else {
+            if (numGoodPTAMObservations == 0 || nav->state <= 2) {
+                z.observePose(z_obs,varPoseObservation_z_IMU_NO_PTAM); // before PTAM initialization, or has landed
 
-			if((abs(imuHeightDiff) < 0.150 && abs(last_z_heightDiff) < 0.150))	// jumps of more than 150mm in 40ms are ignored
-			{
-				z.observePose(observedHeight,varPoseObservation_z_IMU);
-				lastdZ = observedHeight;
-			}
-		}
-		else
-		{
-			double imuHeightDiff = (z_obs - baselineZ_IMU );
-			double observedHeight = baselineZ_Filter + imuHeightDiff;
+                if(lastIMU_XYZ_dronetime > 0)
+                {
+                    z.observeSpeed((z_obs - baselineZ_IMU) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU_NO_PTAM*10);
+                }
+            } else {  // PTAM is lost
+                z.observePose(baselineZ_Filter + z_obs - baselineZ_IMU,varPoseObservation_z_IMU_NO_PTAM);
 
-			if(abs(imuHeightDiff) < 0.110)	// jumps of more than 150mm in 40ms are ignored
-			{
-				z.observePose(observedHeight,varPoseObservation_z_IMU_NO_PTAM);
-				lastdZ = observedHeight;
-			}
-			else	// there was a jump: dont observe anything, but set new baselines.
-			{
-				if(baselineZ_IMU == 0 || nav->altd == 0)
-				{
-					z.observePose(observedHeight,0);
-					z.observeSpeed(0,0);
-				}
+                if(lastIMU_XYZ_dronetime > 0)
+                {
+                    z.observeSpeed((z.state[0] - baselineZ_Filter) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU_NO_PTAM*10);
+                }
 
-				baselineZ_IMU = z_obs;
-				baselineZ_Filter = z.state[0];
-			}
-		}
+            }
 
-		last_z_IMU = z_obs;
-		last_z_packageID = nav->header.seq;
-	}
+        }
+    }
+
+    baselineZ_IMU = z_obs;
+    baselineZ_Filter = z.state[0];
+    lastIMU_XYZ_dronetime = getMS(nav->header.stamp);
+    last_z_packageID = nav->header.seq;
 
 }
 
@@ -619,6 +608,9 @@ void DroneKalmanFilter::updateScaleXYZ(TooN::Vector<3> ptamDiff, TooN::Vector<3>
 		(*scalePairs)[0].computeEstimator(sumPPz,sumIIz,sumPIz,1,0.00001)
 		);
 
+	printf("sumPP: %.3f  sumII: %.3f  sumPI: %.3f\n",
+        sumPP, sumII, sumPI
+		);
 
 	if(scale_Filtered > 0.1)
 		z_scale = xy_scale = scale_Filtered;
