@@ -378,19 +378,13 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 
 	if(lastPosesValid)
 	{
-        if (node->arDroneVersion > 1) // the ARDrone 1.0 doesn't have a magnetometer and so its rotZ will drift over time
-        {                             //  therefore we don't have yaw pose observations, but speed is ok
-            yaw.observePose(observedYaw,1*1);
-        }
+        yaw.observePose(yaw.state[0] + imuYawDiff,1*1);
         if (std::isfinite(observedYawSpeed))
             yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw);
 	}
 	else
 	{
-        if (node->arDroneVersion > 1)
-        {
-            yaw.observePose(observedYaw,.5*.5);
-        }
+        yaw.observePose(yaw.state[0] + imuYawDiff,0.5*0.5);
         if (std::isfinite(observedYawSpeed))
             yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw/2);
 
