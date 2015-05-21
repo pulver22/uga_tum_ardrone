@@ -277,7 +277,7 @@ private:
 	int numGoodPTAMObservations;
 
 	// parameters used for adding / timing
-	double lastIMU_XYZ_dronetime;
+	long lastIMU_XYZ_dronetime;
 	long lastIMU_RPY_dronetime;
 	long lastIMU_dronetime;
 	int lastIMU_XYZ_ID;

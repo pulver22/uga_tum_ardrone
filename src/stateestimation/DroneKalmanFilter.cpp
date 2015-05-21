@@ -321,7 +321,9 @@ void DroneKalmanFilter::observeIMU_XYZ (const ardrone_autonomy::Navdata* nav)
 
         if(lastIMU_XYZ_dronetime > 0)
         {
-            z.observeSpeed((z_obs - baselineZ_IMU) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0),varPoseObservation_z_IMU*10);
+            double speed = (z_obs - baselineZ_IMU) / ((getMS(nav->header.stamp) - lastIMU_XYZ_dronetime) / 1000.0);
+            if (std::isfinite(speed))
+                z.observeSpeed(speed,varPoseObservation_z_IMU*10);
         }
 
     }
