@@ -219,7 +219,7 @@ void DroneKalmanFilter::predictInternal(geometry_msgs::Twist activeControlInfo, 
 	double rollRad = roll.state * 3.14159268 / 180;
 	double pitchRad = pitch.state * 3.14159268 / 180;
 
-	double vz_gain = tsSeconds * c7 * (c8*activeControlInfo.linear.z - z.state[1]) * fabs(cos(rollRad)*cos(yawRad));
+	double vz_gain = tsSeconds * c7 * (c8*activeControlInfo.linear.z - z.state[1]) * fabs(cos(rollRad)*cos(pitchRad));
 
 	double accelX = (cos(yawRad) * tan(rollRad) * (9.8 + vz_gain) - sin(yawRad) * tan(pitchRad) * (9.8 + vz_gain)); // X is left-right (global)
 	double accelY = (-sin(yawRad) * tan(rollRad) * (9.8 + vz_gain) - cos(yawRad) * tan(pitchRad) * (9.8 + vz_gain)); // Y is front-back (global)
@@ -347,6 +347,7 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 		baselinesYValid = true;
 		timestampYawBaselineFrom = getMS(nav->header.stamp);
 		lastdYaw = 0;
+		return;
 	}
 
 	if (!initializedAbsoluteY && nav->state > 2 && nav->state < 7) {
