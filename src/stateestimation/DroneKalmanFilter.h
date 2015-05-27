@@ -406,6 +406,9 @@ public:
 	float c7;
 	float c8;
 
+    // landed drift handling
+    float yawDriftThreshold;
+    float zDriftThreshold;
 
 
 	bool handleCommand(std::string s);

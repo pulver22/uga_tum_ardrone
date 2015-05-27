@@ -305,6 +305,12 @@ void DroneKalmanFilter::observeIMU_XYZ (const ardrone_autonomy::Navdata* nav)
 
     if(abs(z_obs - baselineZ_IMU) < 0.150)	// jumps of more than 150mm in 40ms are ignored
     {
+
+        // Prevent drift on the ground
+        if (nav->state <= 2 && fabs(z_obs - baselineZ_IMU) < zDriftThreshold) {
+            baselineZ_IMU = z_obs;
+        }
+
         if (lastPosesValid) {  // we can't use the z_obs at face value because the sonar might have bounced off something other than the ground
             z.observePose(baselineZ_Filter + z_obs - baselineZ_IMU,varPoseObservation_z_IMU); // This could also be solved with a large variance, but this is adequate for the ardrone's short flights
 
@@ -375,6 +381,13 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 
 	double imuYawDiff = observedYaw - baselineY_IMU;
     double observedYawSpeed = imuYawDiff / ((getMS(nav->header.stamp) - timestampYawBaselineFrom) / 1000.0);
+
+
+    // Prevent drift on the ground
+    if (nav->state <= 2 && fabs(imuYawDiff) < yawDriftThreshold) {
+        imuYawDiff = 0;
+        observedYawSpeed = 0;
+    }
 
     baselineY_IMU = observedYaw;
     timestampYawBaselineFrom = getMS(nav->header.stamp);

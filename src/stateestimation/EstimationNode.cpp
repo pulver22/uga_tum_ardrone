@@ -343,6 +343,9 @@ void EstimationNode::dynConfCb(tum_ardrone::StateestimationParamsConfig &config,
 	filter->c7 = config.c7;
 	filter->c8 = config.c8;
 
+	filter->zDriftThreshold = config.zDriftThreshold;
+	filter->yawDriftThreshold = config.yawDriftThreshold;
+
 }
 
 pthread_mutex_t EstimationNode::tum_ardrone_CS = PTHREAD_MUTEX_INITIALIZER; //pthread_mutex_lock( &cs_mutex );
