@@ -163,8 +163,6 @@ void DroneKalmanFilter::reset()
 
 	baselineZ_Filter = baselineZ_IMU = -999999;
 	baselinesYValid = false;
-    initializedAbsoluteY = false;
-    rotZOffset = 0;
 
 	node->publishCommand("u l EKF has been reset to zero.");
 }
@@ -351,20 +349,14 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
 
 	if(!baselinesYValid)	// only for initialization.
 	{
-		baselineY_IMU = nav->rotZ - rotZOffset;
+		baselineY_IMU = nav->rotZ - node->initialYaw;
 		baselinesYValid = true;
 		timestampYawBaselineFrom = getMS(nav->header.stamp);
 		lastdYaw = 0;
 		return;
 	}
 
-	if (!initializedAbsoluteY && nav->state > 2 && nav->state < 7) {
-        rotZOffset = node->initialYaw + nav->rotZ;
-        baselineY_IMU = 0;
-        initializedAbsoluteY = true;
-	}
-
-	double observedYaw = nav->rotZ - rotZOffset;
+	double observedYaw = nav->rotZ - node->initialYaw;
 
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);
 
@@ -392,19 +384,22 @@ void DroneKalmanFilter::observeIMU_RPY(const ardrone_autonomy::Navdata* nav)
     baselineY_IMU = observedYaw;
     timestampYawBaselineFrom = getMS(nav->header.stamp);
 
-	if(lastPosesValid)
-	{
-        yaw.observePose(yaw.state[0] + imuYawDiff,1*1);
-        if (std::isfinite(observedYawSpeed))
-            yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw);
-	}
-	else
-	{
-        yaw.observePose(yaw.state[0] + imuYawDiff,0.5*0.5);
-        if (std::isfinite(observedYawSpeed))
-            yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw/2);
+    if (fabs(observedYawSpeed) < 720) {
 
-	}
+        if(lastPosesValid)
+        {
+            yaw.observePose(yaw.state[0] + imuYawDiff,1*1);
+            if (std::isfinite(observedYawSpeed))
+                yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw);
+        }
+        else
+        {
+            yaw.observePose(yaw.state[0] + imuYawDiff,0.5*0.5);
+            if (std::isfinite(observedYawSpeed))
+                yaw.observeSpeed(observedYawSpeed,varSpeedObservation_yaw/2);
+
+        }
+    }
 
     lastdYaw = observedYaw;
 	yaw.state[0] =  angleFromTo(yaw.state[0],-180,180);

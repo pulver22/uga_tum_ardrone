@@ -210,7 +210,7 @@ void DroneController::calcControl(TooN::Vector<4> new_err, TooN::Vector<4> new_v
     double clippedZForce = std::max((-9.8 * droneMassInKilos)*0.8, (2 * droneMassInKilos * (lastSentControl.gaz + new_velocity[2])) / deltaT);
 
     // how much force do the motors actually generate? need to remove gravity from this
-    double appliedEngineForce = (clippedZForce + 9.8 * droneMassInKilos) / (fabs(cos(pitchRad) * cos(rollRad)));
+    double appliedEngineForce = (/*clippedZForce +*/ 9.8 * droneMassInKilos) / (fabs(cos(pitchRad) * cos(rollRad)));
 
     if (fabs(totalForceRoll) > fabs(appliedEngineForce))
         totalForceRoll = fabs(appliedEngineForce)*sgn(totalForceRoll);
