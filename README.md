@@ -113,8 +113,8 @@ None
 - RescaleFixOrigin: If the scale of the Map is reestimated, only one point in the mapping PTAM <-> World remains fixed.
 	If RescaleFixOrigin == false, this is the current pos. of the drone (to avoid sudden, large "jumps"). this however makes the map "drift".
 	If RescaleFixOrigin == true, by default this is the initialization point where the second KF has been taken (drone pos. may jump suddenly, but map remains fixed.). The fixpoint may be set by the command "lockScaleFP".
-- MinTolerance: min. scale to accept, prevents initialization failures from resulting in drone crashes
-- MaxTolerance: max. scale to accept, prevents initialization failures from resulting in drone crashes
+- MinTolerance: min. scale to accept, prevents initialization failures that could cause the drone to crash (physically)
+- MaxTolerance: max. scale to accept, prevents initialization failures that could cause the drone to crash (physically)
                   
 - c1 ... c8: prediction model parameters of the EKF. see "Camera-Based Navigation of a Low-Cost Quadrocopter"
 
@@ -136,7 +136,7 @@ There are two windows, one shows the video and PTAM's map points, the other one 
 
 ###### Video Window
 
-![Video window](http://wiki.ros.org/uga_tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=video.png)
+![Video window](http://wiki.ros.org/tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=video.png)
 
 | Key   | /tum_adrone/com message | Action  |
 |-------|-------------------------|---------|
@@ -154,7 +154,7 @@ Clicking on the video window will generate waypoints, which are sent to drone_au
 
 ###### Map Window
 
-![Map window](http://wiki.ros.org/uga_tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=map.png)
+![Map window](http://wiki.ros.org/tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=map.png)
 
 | Key   | /tum_adrone/com message | Action  |
 |-------|-------------------------|---------|
@@ -336,7 +336,7 @@ None
 
 #### Using it
 
-![Drone GUI](http://wiki.ros.org/uga_tum_ardrone/drone_gui?action=AttachFile&do=get&target=ui.png)
+![Drone GUI](http://wiki.ros.org/tum_ardrone/drone_gui?action=AttachFile&do=get&target=ui.png)
 
 ###### Monitor Drone, Autopilot and Stateestimation Nodes (top-right part).
 
