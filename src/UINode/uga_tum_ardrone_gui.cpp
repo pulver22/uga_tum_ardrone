@@ -1,25 +1,25 @@
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "tum_ardrone_gui.h"
+#include "uga_tum_ardrone_gui.h"
 #include "RosThread.h"
 #include "PingThread.h"
 #include "time.h"
@@ -55,7 +55,7 @@ int getdirtxt (std::string dir, std::vector<std::string> &files)
 }
 
 
-tum_ardrone_gui::tum_ardrone_gui(QWidget *parent)
+uga_tum_ardrone_gui::uga_tum_ardrone_gui(QWidget *parent)
     : QWidget(parent)
 {
 	ui.setupUi(this);
@@ -97,7 +97,7 @@ tum_ardrone_gui::tum_ardrone_gui(QWidget *parent)
 
 
     std::vector<std::string> files = std::vector<std::string>();
-    getdirtxt(	ros::package::getPath("tum_ardrone") + std::string("/flightPlans/"),files);
+    getdirtxt(	ros::package::getPath("uga_tum_ardrone") + std::string("/flightPlans/"),files);
 
     ui.comboBoxLoadFile->addItem(QString(""), QVariant());
     for(unsigned int i=0;i<files.size();i++)
@@ -107,38 +107,38 @@ tum_ardrone_gui::tum_ardrone_gui(QWidget *parent)
 
 
 
-tum_ardrone_gui::~tum_ardrone_gui()
+uga_tum_ardrone_gui::~uga_tum_ardrone_gui()
 {
 }
 
 // clicked functions
-void tum_ardrone_gui::LandClicked()
+void uga_tum_ardrone_gui::LandClicked()
 {
    	rosThread->publishCommand("c clearCommands");
 	rosThread->sendLand();
 }
-void tum_ardrone_gui::TakeoffClicked()
+void uga_tum_ardrone_gui::TakeoffClicked()
 {
 	rosThread->sendTakeoff();
 }
-void tum_ardrone_gui::ToggleCamClicked()
+void uga_tum_ardrone_gui::ToggleCamClicked()
 {
 	rosThread->sendToggleCam();
 }
-void tum_ardrone_gui::FlatTrimClicked()
+void uga_tum_ardrone_gui::FlatTrimClicked()
 {
 	rosThread->sendFlattrim();
 }
-void tum_ardrone_gui::EmergencyClicked()
+void uga_tum_ardrone_gui::EmergencyClicked()
 {
 	rosThread->sendToggleState();
 }
 
-void tum_ardrone_gui::ClearClicked()
+void uga_tum_ardrone_gui::ClearClicked()
 {
 	rosThread->publishCommand("c clearCommands");
 }
-void tum_ardrone_gui::SendClicked()
+void uga_tum_ardrone_gui::SendClicked()
 {
 	QStringList l = ui.plainTextEditSendCommand->toPlainText().split('\n');
 	for(int i=0;i<l.length();i++)
@@ -150,12 +150,12 @@ void tum_ardrone_gui::SendClicked()
 	}
 	setControlSource(CONTROL_AUTO);
 }
-void tum_ardrone_gui::ClearSendClicked()
+void uga_tum_ardrone_gui::ClearSendClicked()
 {
 	ClearClicked();
 	SendClicked();
 }
-void tum_ardrone_gui::ResetClicked()
+void uga_tum_ardrone_gui::ResetClicked()
 {
 	setControlSource(CONTROL_NONE);
 	ClearClicked();
@@ -163,13 +163,13 @@ void tum_ardrone_gui::ResetClicked()
 }
 
 
-void tum_ardrone_gui::LoadFileChanged(QString val)
+void uga_tum_ardrone_gui::LoadFileChanged(QString val)
 {
 	if(val == "")
 		ui.plainTextEditSendCommand->setPlainText("");
 	else
 	{
-		std::string path = ros::package::getPath("tum_ardrone") + std::string("/flightPlans/") + val.toStdString();
+		std::string path = ros::package::getPath("uga_tum_ardrone") + std::string("/flightPlans/") + val.toStdString();
 		addLogLine("Load File "+ path);
 
 		std::ifstream t;
@@ -186,18 +186,18 @@ void tum_ardrone_gui::LoadFileChanged(QString val)
 		ui.plainTextEditSendCommand->setPlainText(buffer.c_str());
 	}
 }
-void tum_ardrone_gui::ToggledUseHovering(int val)
+void uga_tum_ardrone_gui::ToggledUseHovering(int val)
 {
 	useHovering = (val != 0);
 }
 
-void tum_ardrone_gui::ToggledPingDrone(int val)
+void uga_tum_ardrone_gui::ToggledPingDrone(int val)
 {
 	pingThread->measure = (val != 0);
 }
 
 // change control source functions
-void tum_ardrone_gui::ControlSourceChanged()
+void uga_tum_ardrone_gui::ControlSourceChanged()
 {
 	ControlSource s = CONTROL_NONE;
 
@@ -219,7 +219,7 @@ void tum_ardrone_gui::ControlSourceChanged()
 }
 
 
-void tum_ardrone_gui::setControlSourceSlot(int cont)
+void uga_tum_ardrone_gui::setControlSourceSlot(int cont)
 {
 
 	currentControlSource = (ControlSource)cont;
@@ -235,7 +235,7 @@ void tum_ardrone_gui::setControlSourceSlot(int cont)
 	ControlSourceChanged();
 }
 
-void tum_ardrone_gui::setCountsSlot(unsigned int nav,unsigned int control,unsigned int pose,unsigned int joy)
+void uga_tum_ardrone_gui::setCountsSlot(unsigned int nav,unsigned int control,unsigned int pose,unsigned int joy)
 {
 	char buf[100];
 	snprintf(buf,100, "Drone Control: %d Hz", control);
@@ -251,30 +251,30 @@ void tum_ardrone_gui::setCountsSlot(unsigned int nav,unsigned int control,unsign
 	ui.labelPoseEst->setText(buf);
 }
 
-void tum_ardrone_gui::setPingsSlot(int p500, int p20000)
+void uga_tum_ardrone_gui::setPingsSlot(int p500, int p20000)
 {
 	char buf[100];
 	snprintf(buf,100, "Pings (RTT): %d (500B), %d (20kB)", p500, p20000);
 	ui.labelDronePings->setText(buf);
 }
 
-void tum_ardrone_gui::addLogLineSlot(QString s)
+void uga_tum_ardrone_gui::addLogLineSlot(QString s)
 {
 	ui.plainTextEditMessages->appendPlainText(s);
 }
-void tum_ardrone_gui::setAutopilotInfoSlot(QString s)
+void uga_tum_ardrone_gui::setAutopilotInfoSlot(QString s)
 {
 	ui.plainTextEditAutopilotStatus->setPlainText(s);
 }
-void tum_ardrone_gui::setStateestimationInfoSlot(QString s)
+void uga_tum_ardrone_gui::setStateestimationInfoSlot(QString s)
 {
 	ui.plainTextEditStateestimationStatus->setPlainText(s);
 }
-void tum_ardrone_gui::setMotorSpeedsSlot(QString s)
+void uga_tum_ardrone_gui::setMotorSpeedsSlot(QString s)
 {
 	ui.labelDroneMotors->setText(s);
 }
-void tum_ardrone_gui::closeWindowSlot()
+void uga_tum_ardrone_gui::closeWindowSlot()
 {
 	closeWindow();
 }
@@ -282,42 +282,42 @@ void tum_ardrone_gui::closeWindowSlot()
 
 // these may be called from external thread,
 // so they just "forward" the request.
-void tum_ardrone_gui::setCounts(unsigned int nav,unsigned int control,unsigned int pose,unsigned int joy)
+void uga_tum_ardrone_gui::setCounts(unsigned int nav,unsigned int control,unsigned int pose,unsigned int joy)
 {
 	emit setCountsSignal(nav, control, pose, joy);
 }
-void tum_ardrone_gui::setControlSource(ControlSource cont)
+void uga_tum_ardrone_gui::setControlSource(ControlSource cont)
 {
 	emit setControlSourceSignal((int)cont);
 }
-void tum_ardrone_gui::addLogLine(std::string s)
+void uga_tum_ardrone_gui::addLogLine(std::string s)
 {
 	emit addLogLineSignal(QString(s.c_str()));
 }
-void tum_ardrone_gui::setAutopilotInfo(std::string s)
+void uga_tum_ardrone_gui::setAutopilotInfo(std::string s)
 {
 	emit setAutopilotInfoSignal(QString(s.c_str()));
 }
-void tum_ardrone_gui::setMotorSpeeds(std::string s)
+void uga_tum_ardrone_gui::setMotorSpeeds(std::string s)
 {
 	emit setMotorSpeedsSignal(QString(s.c_str()));
 }
-void tum_ardrone_gui::setStateestimationInfo(std::string s)
+void uga_tum_ardrone_gui::setStateestimationInfo(std::string s)
 {
 	emit setStateestimationInfoSignal(QString(s.c_str()));
 }
-void tum_ardrone_gui::setPings(int p500, int p20000)
+void uga_tum_ardrone_gui::setPings(int p500, int p20000)
 {
 	emit setPingsSignal(p500, p20000);
 }
-void tum_ardrone_gui::closeWindow()
+void uga_tum_ardrone_gui::closeWindow()
 {
 	emit closeWindowSignal();
 }
 
 
 // KB control stuff
-int tum_ardrone_gui::mapKey(int k)
+int uga_tum_ardrone_gui::mapKey(int k)
 {
 	switch(k)
 	{
@@ -341,7 +341,7 @@ int tum_ardrone_gui::mapKey(int k)
 	return -1;
 }
 
-void tum_ardrone_gui::keyReleaseEvent( QKeyEvent * key)
+void uga_tum_ardrone_gui::keyReleaseEvent( QKeyEvent * key)
 {
 	if(currentControlSource == CONTROL_KB)
 	{
@@ -361,7 +361,7 @@ void tum_ardrone_gui::keyReleaseEvent( QKeyEvent * key)
 	}
 }
 
-void tum_ardrone_gui::keyPressEvent( QKeyEvent * key)
+void uga_tum_ardrone_gui::keyPressEvent( QKeyEvent * key)
 {
 
 	if(currentControlSource == CONTROL_KB)
@@ -399,7 +399,7 @@ void tum_ardrone_gui::keyPressEvent( QKeyEvent * key)
 	}
 }
 
-ControlCommand tum_ardrone_gui::calcKBControl()
+ControlCommand uga_tum_ardrone_gui::calcKBControl()
 {
 	// clear keys that have not been refreshed for 1s, it is set to "not pressed"
 	for(int i=0;i<8;i++)
@@ -420,7 +420,7 @@ ControlCommand tum_ardrone_gui::calcKBControl()
 }
 
 
-void tum_ardrone_gui::dynConfCb(tum_ardrone::GUIParamsConfig &config, uint32_t level)
+void uga_tum_ardrone_gui::dynConfCb(uga_tum_ardrone::GUIParamsConfig &config, uint32_t level)
 {
     pingThread->setIp(config.DroneIP);
     sensRP = config.KBsensRP;

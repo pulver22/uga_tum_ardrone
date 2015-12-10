@@ -1,22 +1,22 @@
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -34,7 +34,7 @@
 #include "DroneKalmanFilter.h"
 #include <ardrone_autonomy/Navdata.h>
 #include "deque"
-#include "tum_ardrone/filter_state.h"
+#include "uga_tum_ardrone/filter_state.h"
 #include "PTAMWrapper.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Empty.h"
@@ -56,8 +56,8 @@ EstimationNode::EstimationNode()
     control_channel = nh_.resolveName("cmd_vel");
     output_channel = nh_.resolveName("ardrone/predictedPose");
     video_channel = nh_.resolveName("ardrone/image_raw");
-    command_channel = nh_.resolveName("tum_ardrone/com");
-	packagePath = ros::package::getPath("tum_ardrone");
+    command_channel = nh_.resolveName("uga_tum_ardrone/com");
+	packagePath = ros::package::getPath("uga_tum_ardrone");
 
 	std::string val;
 	float valFloat = 0;
@@ -85,10 +85,10 @@ EstimationNode::EstimationNode()
 	vel_sub          = nh_.subscribe(control_channel,10, &EstimationNode::velCb, this);
 	vid_sub          = nh_.subscribe(video_channel,10, &EstimationNode::vidCb, this);
 
-	dronepose_pub	   = nh_.advertise<tum_ardrone::filter_state>(output_channel,1);
+	dronepose_pub	   = nh_.advertise<uga_tum_ardrone::filter_state>(output_channel,1);
 
-	tum_ardrone_pub	   = nh_.advertise<std_msgs::String>(command_channel,50);
-	tum_ardrone_sub	   = nh_.subscribe(command_channel,50, &EstimationNode::comCb, this);
+	uga_tum_ardrone_pub	   = nh_.advertise<std_msgs::String>(command_channel,50);
+	uga_tum_ardrone_sub	   = nh_.subscribe(command_channel,50, &EstimationNode::comCb, this);
 
 	//tf_broadcaster();
 
@@ -280,7 +280,7 @@ void EstimationNode::Loop()
 		  // -------------- 3. get predicted pose and publish! ---------------
 		  // get filter state msg
 		  pthread_mutex_lock( &filter->filter_CS );
-		  tum_ardrone::filter_state s = filter->getPoseAt(ros::Time().now() + predTime);
+		  uga_tum_ardrone::filter_state s = filter->getPoseAt(ros::Time().now() + predTime);
 		  pthread_mutex_unlock( &filter->filter_CS );
 
 		  // fill metadata
@@ -313,7 +313,7 @@ void EstimationNode::Loop()
 		  pub_rate.sleep();
 	  }
 }
-void EstimationNode::dynConfCb(tum_ardrone::StateestimationParamsConfig &config, uint32_t level)
+void EstimationNode::dynConfCb(uga_tum_ardrone::StateestimationParamsConfig &config, uint32_t level)
 {
 	if(!filter->allSyncLocked && config.PTAMSyncLock)
 		ROS_WARN("Ptam Sync has been disabled. This fixes scale etc.");
@@ -349,14 +349,14 @@ void EstimationNode::dynConfCb(tum_ardrone::StateestimationParamsConfig &config,
 
 }
 
-pthread_mutex_t EstimationNode::tum_ardrone_CS = PTHREAD_MUTEX_INITIALIZER; //pthread_mutex_lock( &cs_mutex );
+pthread_mutex_t EstimationNode::uga_tum_ardrone_CS = PTHREAD_MUTEX_INITIALIZER; //pthread_mutex_lock( &cs_mutex );
 void EstimationNode::publishCommand(std::string c)
 {
 	std_msgs::String s;
 	s.data = c.c_str();
-	pthread_mutex_lock(&tum_ardrone_CS);
-	tum_ardrone_pub.publish(s);
-	pthread_mutex_unlock(&tum_ardrone_CS);
+	pthread_mutex_lock(&uga_tum_ardrone_CS);
+	uga_tum_ardrone_pub.publish(s);
+	pthread_mutex_unlock(&uga_tum_ardrone_CS);
 }
 
 void EstimationNode::publishTf(TooN::SE3<> trans, ros::Time stamp, int seq, std::string system)

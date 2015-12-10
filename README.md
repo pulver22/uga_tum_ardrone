@@ -1,4 +1,10 @@
-# Package tum_ardrone
+# Package uga_tum_ardrone
+
+This package is a fork of the popular [tum_ardrone](https://github.com/tum-vision/tum_ardrone) package. Currently, the changes are:
+
+* Replace the PID controller with a more specialized controller based on a damped spring
+* Improve the accuracy of the state estimation 
+* Small bug fixes and improvements to the user experience
 
 This package contains the implementation corresponding to the following publications:
 
@@ -17,9 +23,9 @@ The code works for both the AR.Drone 1.0 and 2.0, the default-parameters however
 
 ``` bash
 cd catkin_ws/src
-git clone https://github.com/tum-vision/tum_ardrone.git -b hydro-devel
+git clone https://github.com/thinclab/uga_tum_ardrone.git -b indigo-devel
 cd ..
-rosdep install tum_ardrone
+rosdep install uga_tum_ardrone
 catkin_make
 ```
 
@@ -28,8 +34,8 @@ catkin_make
 #### Launch the nodes
 
 ``` bash
-roslaunch tum_ardrone ardrone_driver.launch
-roslaunch tum_ardrone tum_ardrone.launch
+roslaunch uga_tum_ardrone ardrone_driver.launch
+roslaunch uga_tum_ardrone uga_tum_ardrone.launch
 ```
 
 #### Check status
@@ -75,12 +81,12 @@ rosrun ardrone_autonomy ardrone_driver _navdata_demo:=0 _loop_rate:=500
 - /ardrone/navdata
 - /ardrone/image_raw
 - /cmd_vel
-- /tum_ardrone/com
+- /uga_tum_ardrone/com
 
 #### Published topics
 
 - /ardrone/predictedPose
-- /tum_ardrone/com
+- /uga_tum_ardrone/com
 
 #### Services
 
@@ -121,11 +127,11 @@ TODO
 #### Using it
 
 To properly estimate PTAM's scale, it is best to fly up and down a little bit (e.g. 1m up and 1m down) immediately after initialization.
-There are two windows, one shows the video and PTAM's map points, the other one the map. To issue key commands, focus the respective window and hit a key. This generates a command on /tum_ardrone/com, which in turn is parsed and does something.
+There are two windows, one shows the video and PTAM's map points, the other one the map. To issue key commands, focus the respective window and hit a key. This generates a command on /uga_tum_ardrone/com, which in turn is parsed and does something.
 
 ###### Video Window
 
-![Video window](http://wiki.ros.org/tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=video.png)
+![Video window](http://wiki.ros.org/uga_tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=video.png)
 
 | Key   | /tum_adrone/com message | Action  |
 |-------|-------------------------|---------|
@@ -143,7 +149,7 @@ Clicking on the video window will generate waypoints, which are sent to drone_au
 
 ###### Map Window
 
-![Map window](http://wiki.ros.org/tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=map.png)
+![Map window](http://wiki.ros.org/uga_tum_ardrone/drone_stateestimation?action=AttachFile&do=get&target=map.png)
 
 | Key   | /tum_adrone/com message | Action  |
 |-------|-------------------------|---------|
@@ -155,7 +161,7 @@ Clicking on the video window will generate waypoints, which are sent to drone_au
 
 ### drone_autopilot
 
-PID controller for the drone. Also includes basic way-point-following and automatic initialization. Requires [drone_stateestimation](#drone_stateestimation) to be running. The target is set via the /tum_ardrone/com topic.
+PID controller for the drone. Also includes basic way-point-following and automatic initialization. Requires [drone_stateestimation](#drone_stateestimation) to be running. The target is set via the /uga_tum_ardrone/com topic.
 
 #### Subscribed topics
 
@@ -190,7 +196,7 @@ TODO
 
 #### Using it
 
-The behavior of the autopilot is set by sending commands on /tum_ardrone/com of the form "c COMMAND". A Queue of commands is kept, and as soon as one command is finished (for example a way point reached), the next command is popped. The queue can be cleared by sending "c clearCommands". Commands can be sent using the [drone_gui](#drone_gui) node. Some example scripts can be found in /flightPlans/*.txt. Possible commands are:
+The behavior of the autopilot is set by sending commands on /uga_tum_ardrone/com of the form "c COMMAND". A Queue of commands is kept, and as soon as one command is finished (for example a way point reached), the next command is popped. The queue can be cleared by sending "c clearCommands". Commands can be sent using the [drone_gui](#drone_gui) node. Some example scripts can be found in /flightPlans/*.txt. Possible commands are:
 
 - autoInit [int moveTimeMS] [int waitTimeMS] [int riseTimeMs] [float initSpeed]
 
@@ -270,7 +276,7 @@ This node offers a simple QT GUI to control the [drone_autopilot](#drone_autopil
 #### Subscribed topics
 
 - /cmd_vel
-- /tum_ardrone/com
+- /uga_tum_ardrone/com
 - /ardrone/takeoff
 - /ardrone/land
 - /ardrone/reset
@@ -281,7 +287,7 @@ This node offers a simple QT GUI to control the [drone_autopilot](#drone_autopil
 #### Published topics
 
 - /cmd_vel
-- /tum_ardrone/com
+- /uga_tum_ardrone/com
 - /ardrone/takeoff
 - /ardrone/land
 - /ardrone/reset
@@ -305,7 +311,7 @@ None
 
 #### Using it
 
-![Drone GUI](http://wiki.ros.org/tum_ardrone/drone_gui?action=AttachFile&do=get&target=ui.png)
+![Drone GUI](http://wiki.ros.org/uga_tum_ardrone/drone_gui?action=AttachFile&do=get&target=ui.png)
 
 ###### Monitor Drone, Autopilot and Stateestimation Nodes (top-right part).
 
@@ -395,8 +401,8 @@ can be estimated easily by
 - recording a flight: rosbag record -O calibFlight.bag /ardrone/image_raw /ardrone/navdata /cmd_vel
 - playing back that flight: rosbag play -l calibFlight.bag
 - starting two stateestimation nodes, one with remapped name and output:
-  - rosrun tum_ardrone drone_stateestimation __name:=drone_stateestimationn2 /ardrone/predictedPose:=/ardrone/predictedPose2
-  - rosrun tum_ardrone drone_stateestimation
+  - rosrun uga_tum_ardrone drone_stateestimation __name:=drone_stateestimationn2 /ardrone/predictedPose:=/ardrone/predictedPose2
+  - rosrun uga_tum_ardrone drone_stateestimation
 - plotting the respective estimated values
   - e.g.: rxplot /ardrone/predictedPose/dx,/ardrone/predictedPose2/dx
 - using dynamic reconfigure to 

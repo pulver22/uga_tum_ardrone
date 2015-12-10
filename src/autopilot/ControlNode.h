@@ -1,42 +1,42 @@
 #pragma once
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef __CONTROLNODE_H
 #define __CONTROLNODE_H
 
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
-#include "tum_ardrone/filter_state.h"
+#include "uga_tum_ardrone/filter_state.h"
 #include "std_msgs/String.h"
 #include <dynamic_reconfigure/server.h>
-#include "tum_ardrone/AutopilotParamsConfig.h"
+#include "uga_tum_ardrone/AutopilotParamsConfig.h"
 #include "DroneController.h"
 #include "std_msgs/Empty.h"
 #include "std_srvs/Empty.h"
 
-#include "tum_ardrone/SetReference.h"
-#include "tum_ardrone/SetMaxControl.h"
-#include "tum_ardrone/SetInitialReachDistance.h"
-#include "tum_ardrone/SetStayWithinDistance.h"
-#include "tum_ardrone/SetStayTime.h"
+#include "uga_tum_ardrone/SetReference.h"
+#include "uga_tum_ardrone/SetMaxControl.h"
+#include "uga_tum_ardrone/SetInitialReachDistance.h"
+#include "uga_tum_ardrone/SetStayWithinDistance.h"
+#include "uga_tum_ardrone/SetStayTime.h"
 #include "std_srvs/Empty.h"
 #include <fstream>
 
@@ -51,14 +51,14 @@ struct ControlNode
 private:
 	ros::Subscriber dronepose_sub;
 	ros::Publisher vel_pub;
-	ros::Subscriber tum_ardrone_sub;
-	ros::Publisher tum_ardrone_pub;
+	ros::Subscriber uga_tum_ardrone_sub;
+	ros::Publisher uga_tum_ardrone_pub;
 	ros::Publisher takeoff_pub;
 	ros::Publisher land_pub;
 	ros::Publisher toggleState_pub;
 
 	ros::NodeHandle nh_;
-	static pthread_mutex_t tum_ardrone_CS;
+	static pthread_mutex_t uga_tum_ardrone_CS;
 
 	// parameters
 	int minPublishFreq;
@@ -82,11 +82,11 @@ private:
 	ros::ServiceServer hover_;
 	ros::ServiceServer lockScaleFP_;
 
-	bool setReference(tum_ardrone::SetReference::Request&, tum_ardrone::SetReference::Response&);
-	bool setMaxControl(tum_ardrone::SetMaxControl::Request&, tum_ardrone::SetMaxControl::Response&);
-	bool setInitialReachDistance(tum_ardrone::SetInitialReachDistance::Request&, tum_ardrone::SetInitialReachDistance::Response&);
-	bool setStayWithinDistance(tum_ardrone::SetStayWithinDistance::Request&, tum_ardrone::SetStayWithinDistance::Response&);
-	bool setStayTime(tum_ardrone::SetStayTime::Request&, tum_ardrone::SetStayTime::Response&);
+	bool setReference(uga_tum_ardrone::SetReference::Request&, uga_tum_ardrone::SetReference::Response&);
+	bool setMaxControl(uga_tum_ardrone::SetMaxControl::Request&, uga_tum_ardrone::SetMaxControl::Response&);
+	bool setInitialReachDistance(uga_tum_ardrone::SetInitialReachDistance::Request&, uga_tum_ardrone::SetInitialReachDistance::Response&);
+	bool setStayWithinDistance(uga_tum_ardrone::SetStayWithinDistance::Request&, uga_tum_ardrone::SetStayWithinDistance::Response&);
+	bool setStayTime(uga_tum_ardrone::SetStayTime::Request&, uga_tum_ardrone::SetStayTime::Response&);
 	bool start(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 	bool stop(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 	bool clear(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
@@ -112,9 +112,9 @@ private:
 	void startControl();
 	void stopControl();
 	void clearCommands();
-	void updateControl(const tum_ardrone::filter_stateConstPtr statePtr);
+	void updateControl(const uga_tum_ardrone::filter_stateConstPtr statePtr);
 
-	void popNextCommand(const tum_ardrone::filter_stateConstPtr statePtr);
+	void popNextCommand(const uga_tum_ardrone::filter_stateConstPtr statePtr);
 	void reSendInfo();
 	char buf[500];
 	ControlCommand lastSentControl;
@@ -124,14 +124,14 @@ public:
 
 
 	// ROS message callbacks
-	void droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr);
+	void droneposeCb(const uga_tum_ardrone::filter_stateConstPtr statePtr);
 	void comCb(const std_msgs::StringConstPtr str);
-	void dynConfCb(tum_ardrone::AutopilotParamsConfig &config, uint32_t level);
+	void dynConfCb(uga_tum_ardrone::AutopilotParamsConfig &config, uint32_t level);
 
 	// main pose-estimation loop
 	void Loop();
 
-	// writes a string message to "/tum_ardrone/com".
+	// writes a string message to "/uga_tum_ardrone/com".
 	// is thread-safe (can be called by any thread, but may block till other calling thread finishes)
 	void publishCommand(std::string c);
 

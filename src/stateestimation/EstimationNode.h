@@ -1,23 +1,23 @@
 #pragma once
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef __ESTIMATIONNODE_H
 #define __ESTIMATIONNODE_H
@@ -32,10 +32,10 @@
 #include "std_msgs/Empty.h"
 #include "std_srvs/Empty.h"
 #include "ardrone_autonomy/Navdata.h"
-#include "tum_ardrone/filter_state.h"
+#include "uga_tum_ardrone/filter_state.h"
 #include "std_msgs/String.h"
 #include <dynamic_reconfigure/server.h>
-#include "tum_ardrone/StateestimationParamsConfig.h"
+#include "uga_tum_ardrone/StateestimationParamsConfig.h"
 #include "TooN/se3.h"
 
 
@@ -56,9 +56,9 @@ private:
 	// comm with ptam
 	//ros::Subscriber slam_info_sub; // ptam info (tracking quality) etc.
 	//tf::TransformListener tf_sub;
-	ros::Subscriber tum_ardrone_sub;
-	ros::Publisher tum_ardrone_pub;
-	static pthread_mutex_t tum_ardrone_CS;
+	ros::Subscriber uga_tum_ardrone_sub;
+	ros::Publisher uga_tum_ardrone_pub;
+	static pthread_mutex_t uga_tum_ardrone_CS;
 
 	// output
 	ros::Publisher dronepose_pub;
@@ -107,12 +107,12 @@ public:
 	void velCb(const geometry_msgs::TwistConstPtr velPtr);
 	void vidCb(const sensor_msgs::ImageConstPtr img);
 	void comCb(const std_msgs::StringConstPtr str);
-	void dynConfCb(tum_ardrone::StateestimationParamsConfig &config, uint32_t level);
+	void dynConfCb(uga_tum_ardrone::StateestimationParamsConfig &config, uint32_t level);
 
 	// main pose-estimation loop
 	void Loop();
 
-	// writes a string message to "/tum_ardrone/com".
+	// writes a string message to "/uga_tum_ardrone/com".
 	// is thread-safe (can be called by any thread, but may block till other calling thread finishes)
 	void publishCommand(std::string c);
 	void reSendInfo();

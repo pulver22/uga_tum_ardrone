@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>tum_ardrone_guiClass</class>
- <widget class="QWidget" name="tum_ardrone_guiClass">
+ <class>uga_tum_ardrone_guiClass</class>
+ <widget class="QWidget" name="uga_tum_ardrone_guiClass">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>tum_ardrone GUI</string>
+   <string>uga_tum_ardrone GUI</string>
   </property>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
@@ -499,7 +499,7 @@
   <connection>
    <sender>buttonLand</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>LandClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -515,7 +515,7 @@
   <connection>
    <sender>buttonSend</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>SendClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -531,7 +531,7 @@
   <connection>
    <sender>buttonClear</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ClearClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -547,7 +547,7 @@
   <connection>
    <sender>buttonTakeoff</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>TakeoffClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -563,7 +563,7 @@
   <connection>
    <sender>buttonReset</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ResetClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -579,7 +579,7 @@
   <connection>
    <sender>buttonClearSend</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ClearSendClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -595,7 +595,7 @@
   <connection>
    <sender>buttonToggleState</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>EmergencyClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -611,7 +611,7 @@
   <connection>
    <sender>buttonToggleCam</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ToggleCamClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -627,7 +627,7 @@
   <connection>
    <sender>comboBoxLoadFile</sender>
    <signal>currentIndexChanged(QString)</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>LoadFileChanged(QString)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -643,7 +643,7 @@
   <connection>
    <sender>radioButtonControKB</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ControlSourceChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -659,7 +659,7 @@
   <connection>
    <sender>radioButtonControlAuto</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ControlSourceChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -675,7 +675,7 @@
   <connection>
    <sender>radioButtonControlNone</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ControlSourceChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -691,7 +691,7 @@
   <connection>
    <sender>radioButtonControlJoy</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ControlSourceChanged()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -707,7 +707,7 @@
   <connection>
    <sender>checkBoxUseOnboardHovering</sender>
    <signal>stateChanged(int)</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ToggledUseHovering(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -723,7 +723,7 @@
   <connection>
    <sender>checkBoxPingDrone</sender>
    <signal>stateChanged(int)</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>ToggledPingDrone(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -739,7 +739,7 @@
   <connection>
    <sender>buttonFlattrim</sender>
    <signal>clicked()</signal>
-   <receiver>tum_ardrone_guiClass</receiver>
+   <receiver>uga_tum_ardrone_guiClass</receiver>
    <slot>FlatTrimClicked()</slot>
    <hints>
     <hint type="sourcelabel">

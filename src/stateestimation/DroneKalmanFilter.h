@@ -1,23 +1,23 @@
 #pragma once
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef __DRONEKALMANFILTER_H
 #define __DRONEKALMANFILTER_H
@@ -31,7 +31,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <pthread.h>
 #include "../HelperFunctions.h"
-#include "tum_ardrone/filter_state.h"
+#include "uga_tum_ardrone/filter_state.h"
 
 class EstimationNode;
 
@@ -355,7 +355,7 @@ public:
 
 	// gets current pose and variances (up to where predictUpTo has been called)
 	TooN::Vector<6> getCurrentPose();
-	tum_ardrone::filter_state getCurrentPoseSpeed();
+	uga_tum_ardrone::filter_state getCurrentPoseSpeed();
 	TooN::Vector<10> getCurrentPoseSpeedAsVec();
 	TooN::Vector<10> getCurrentPoseSpeedVariances();
 	TooN::Vector<6> getCurrentPoseVariances();
@@ -416,7 +416,7 @@ public:
 	// new ROS interface functions
 	void addPTAMObservation(TooN::Vector<6> trans, int time);
 	void addFakePTAMObservation(int time);
-	tum_ardrone::filter_state getPoseAt(ros::Time t, bool useControlGains = true);
+	uga_tum_ardrone::filter_state getPoseAt(ros::Time t, bool useControlGains = true);
 	TooN::Vector<10> getPoseAtAsVec(int timestamp, bool useControlGains = true);
 
 };

@@ -1,22 +1,22 @@
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -826,9 +826,9 @@ TooN::Vector<6> DroneKalmanFilter::getCurrentPose()
 	return TooN::makeVector(x.state[0], y.state[0], z.state[0], roll.state, pitch.state, yaw.state[0]);
 }
 
-tum_ardrone::filter_state DroneKalmanFilter::getCurrentPoseSpeed()
+uga_tum_ardrone::filter_state DroneKalmanFilter::getCurrentPoseSpeed()
 {
-	tum_ardrone::filter_state s;
+	uga_tum_ardrone::filter_state s;
 	s.x = x.state[0];
 	s.y = y.state[0];
 	s.z = z.state[0];
@@ -928,7 +928,7 @@ void DroneKalmanFilter::addFakePTAMObservation(int time)
 
 	lastPosesValid = false;
 }
-tum_ardrone::filter_state DroneKalmanFilter::getPoseAt(ros::Time t, bool useControlGains)
+uga_tum_ardrone::filter_state DroneKalmanFilter::getPoseAt(ros::Time t, bool useControlGains)
 {
 
 	// make shallow copy

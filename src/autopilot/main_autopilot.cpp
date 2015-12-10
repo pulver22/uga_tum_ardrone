@@ -1,22 +1,22 @@
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
  
  
@@ -42,8 +42,8 @@ int main(int argc, char **argv)
 
   ControlNode controlNode;
 
-  dynamic_reconfigure::Server<tum_ardrone::AutopilotParamsConfig> srv;
-  dynamic_reconfigure::Server<tum_ardrone::AutopilotParamsConfig>::CallbackType f;
+  dynamic_reconfigure::Server<uga_tum_ardrone::AutopilotParamsConfig> srv;
+  dynamic_reconfigure::Server<uga_tum_ardrone::AutopilotParamsConfig>::CallbackType f;
   f = boost::bind(&ControlNode::dynConfCb, &controlNode, _1, _2);
   srv.setCallback(f);
 

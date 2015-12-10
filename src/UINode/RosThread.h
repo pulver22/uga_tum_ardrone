@@ -1,23 +1,23 @@
 #pragma once
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef __ROSTHREAD_H
 #define __ROSTHREAD_H
@@ -25,7 +25,7 @@
  
 
 #include "cvd/thread.h"
-#include "tum_ardrone/filter_state.h"
+#include "uga_tum_ardrone/filter_state.h"
 #include "std_msgs/String.h"
 #include "geometry_msgs/Twist.h"
 #include "ardrone_autonomy/Navdata.h"
@@ -34,7 +34,7 @@
 #include "std_srvs/Empty.h"
 #include "std_msgs/Empty.h"
 
-class tum_ardrone_gui;
+class uga_tum_ardrone_gui;
 
 struct ControlCommand
 {
@@ -62,8 +62,8 @@ private:
 	ros::Subscriber dronepose_sub;
 	ros::Publisher vel_pub;
 	ros::Subscriber vel_sub;
-	ros::Subscriber tum_ardrone_sub;
-	ros::Publisher tum_ardrone_pub;
+	ros::Subscriber uga_tum_ardrone_sub;
+	ros::Publisher uga_tum_ardrone_pub;
 	ros::Subscriber navdata_sub;
 	ros::Subscriber joy_sub;
 	ros::Publisher takeoff_pub;
@@ -102,11 +102,11 @@ public:
 	void startSystem();
 	void stopSystem();
 
-	tum_ardrone_gui* gui;
+	uga_tum_ardrone_gui* gui;
 
 
 	// callbacks
-	void droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr);
+	void droneposeCb(const uga_tum_ardrone::filter_stateConstPtr statePtr);
 	void comCb(const std_msgs::StringConstPtr str);
 	void velCb(const geometry_msgs::TwistConstPtr vel);
 	void navdataCb(const ardrone_autonomy::NavdataConstPtr navdataPtr);
@@ -120,7 +120,7 @@ public:
 
 
 	// send command functions. can be called from any thread & are thread-safe.
-	// writes a string message to "/tum_ardrone/com".
+	// writes a string message to "/uga_tum_ardrone/com".
 	// is thread-safe (can be called by any thread, but may block till other calling thread finishes)
 	void publishCommand(std::string c);
 	void sendControlToDrone(ControlCommand cmd);

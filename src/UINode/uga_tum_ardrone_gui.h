@@ -1,23 +1,23 @@
 #pragma once
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef __TUMARDRONEGUI_H
 #define __TUMARDRONEGUI_H
@@ -26,10 +26,10 @@
 
 
 #include <QtGui/QWidget>
-#include "ui_tum_ardrone_gui.h"
+#include "ui_uga_tum_ardrone_gui.h"
 #include "geometry_msgs/Twist.h"
 #include <dynamic_reconfigure/server.h>
-#include "tum_ardrone/GUIParamsConfig.h"
+#include "uga_tum_ardrone/GUIParamsConfig.h"
 
 class RosThread;
 class PingThread;
@@ -37,7 +37,7 @@ struct ControlCommand;
 
 enum ControlSource {CONTROL_KB = 0, CONTROL_JOY = 1, CONTROL_AUTO = 2, CONTROL_NONE = 3};
 
-class tum_ardrone_gui : public QWidget
+class uga_tum_ardrone_gui : public QWidget
 {
     Q_OBJECT
 
@@ -86,8 +86,8 @@ signals:
 
 
 public:
-    tum_ardrone_gui(QWidget *parent = 0);
-    ~tum_ardrone_gui();
+    uga_tum_ardrone_gui(QWidget *parent = 0);
+    ~uga_tum_ardrone_gui();
     RosThread* rosThread;
     PingThread* pingThread;
 
@@ -99,7 +99,7 @@ public:
     void setStateestimationInfo(std::string s);
     void setMotorSpeeds(std::string s);
     void closeWindow();
-    void dynConfCb(tum_ardrone::GUIParamsConfig &config, uint32_t level);
+    void dynConfCb(uga_tum_ardrone::GUIParamsConfig &config, uint32_t level);
 
 
     // calculates KB command, based on currently pressed keys.
@@ -119,7 +119,7 @@ protected:
 
 
 private:
-    Ui::tum_ardrone_guiClass ui;
+    Ui::uga_tum_ardrone_guiClass ui;
 };
 
 #endif /* __TUMARDRONEGUI_H */

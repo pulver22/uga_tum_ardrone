@@ -1,22 +1,22 @@
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -28,7 +28,7 @@
 
 #include "geometry_msgs/Twist.h"
 #include "../HelperFunctions.h"
-#include "tum_ardrone/filter_state.h"
+#include "uga_tum_ardrone/filter_state.h"
 #include "std_msgs/String.h"
 #include <sys/stat.h>
 #include <string>
@@ -39,7 +39,7 @@
 #include "KI/KILand.h"
 #include "KI/KIProcedure.h"
 
-using namespace tum_ardrone;
+using namespace uga_tum_ardrone;
 using namespace std;
 
 pthread_mutex_t ControlNode::logControl_CS = PTHREAD_MUTEX_INITIALIZER;
@@ -49,12 +49,12 @@ ControlNode::ControlNode()
 {
     control_channel = nh_.resolveName("cmd_vel");
     dronepose_channel = nh_.resolveName("ardrone/predictedPose");
-    command_channel = nh_.resolveName("tum_ardrone/com");
+    command_channel = nh_.resolveName("uga_tum_ardrone/com");
     takeoff_channel = nh_.resolveName("ardrone/takeoff");
     land_channel = nh_.resolveName("ardrone/land");
     toggleState_channel = nh_.resolveName("ardrone/reset");
 
-	packagePath = ros::package::getPath("tum_ardrone");
+	packagePath = ros::package::getPath("uga_tum_ardrone");
 
 	std::string val;
 	float valFloat;
@@ -76,8 +76,8 @@ ControlNode::ControlNode()
 	// channels
 	dronepose_sub = nh_.subscribe(dronepose_channel, 10, &ControlNode::droneposeCb, this);
 	vel_pub	   = nh_.advertise<geometry_msgs::Twist>(control_channel,1);
-	tum_ardrone_pub	   = nh_.advertise<std_msgs::String>(command_channel,50);
-	tum_ardrone_sub	   = nh_.subscribe(command_channel,50, &ControlNode::comCb, this);
+	uga_tum_ardrone_pub	   = nh_.advertise<std_msgs::String>(command_channel,50);
+	uga_tum_ardrone_sub	   = nh_.subscribe(command_channel,50, &ControlNode::comCb, this);
 	takeoff_pub	   = nh_.advertise<std_msgs::Empty>(takeoff_channel,1);
 	land_pub	   = nh_.advertise<std_msgs::Empty>(land_channel,1);
 	toggleState_pub	   = nh_.advertise<std_msgs::Empty>(toggleState_channel,1);
@@ -115,7 +115,7 @@ ControlNode::~ControlNode()
 }
 
 pthread_mutex_t ControlNode::commandQueue_CS = PTHREAD_MUTEX_INITIALIZER;
-void ControlNode::droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr)
+void ControlNode::droneposeCb(const uga_tum_ardrone::filter_stateConstPtr statePtr)
 {
 	// do controlling
 	pthread_mutex_lock(&commandQueue_CS);
@@ -144,7 +144,7 @@ void ControlNode::droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr)
 
 // pops next command(s) from queue (until one is found thats not "done" yet).
 // assumes propery of command queue lock exists (!)
-void ControlNode::popNextCommand(const tum_ardrone::filter_stateConstPtr statePtr)
+void ControlNode::popNextCommand(const uga_tum_ardrone::filter_stateConstPtr statePtr)
 {
 	// should actually not happen., but to make shure:
 	// delete existing KI.
@@ -374,7 +374,7 @@ void ControlNode::Loop()
 		}
 	}
 }
-void ControlNode::dynConfCb(tum_ardrone::AutopilotParamsConfig &config, uint32_t level)
+void ControlNode::dynConfCb(uga_tum_ardrone::AutopilotParamsConfig &config, uint32_t level)
 {
 	controller.K_direct = config.K_direct;
 	controller.K_rp = config.K_rp;
@@ -391,14 +391,14 @@ void ControlNode::dynConfCb(tum_ardrone::AutopilotParamsConfig &config, uint32_t
 
 }
 
-pthread_mutex_t ControlNode::tum_ardrone_CS = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t ControlNode::uga_tum_ardrone_CS = PTHREAD_MUTEX_INITIALIZER;
 void ControlNode::publishCommand(std::string c)
 {
 	std_msgs::String s;
 	s.data = c.c_str();
-	pthread_mutex_lock(&tum_ardrone_CS);
-	tum_ardrone_pub.publish(s);
-	pthread_mutex_unlock(&tum_ardrone_CS);
+	pthread_mutex_lock(&uga_tum_ardrone_CS);
+	uga_tum_ardrone_pub.publish(s);
+	pthread_mutex_unlock(&uga_tum_ardrone_CS);
 }
 
 
@@ -528,7 +528,7 @@ void ControlNode::stopControl() {
 	ROS_INFO("STOP CONTROLLING!");
 }
 
-void ControlNode::updateControl(const tum_ardrone::filter_stateConstPtr statePtr) {
+void ControlNode::updateControl(const uga_tum_ardrone::filter_stateConstPtr statePtr) {
 //	if (currentKI->update(statePtr) && commandQueue.size() > 0) {
 	if (currentKI->update(statePtr)) {
 		delete currentKI;

@@ -5,7 +5,7 @@
 # Contributor: Sina Solaimanpour <sina@uga.edu>
 #
 cmake_minimum_required(VERSION 2.8.3)
-project(tum_ardrone)
+project(uga_tum_ardrone)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
@@ -176,20 +176,20 @@ add_dependencies(drone_autopilot thirdparty ${PROJECT_NAME}_gencpp ${PROJECT_NAM
 # set header ans source files
 set(GUI_SOURCE_FILES         
 	src/UINode/main_GUI.cpp  
-	src/UINode/tum_ardrone_gui.cpp  
+	src/UINode/uga_tum_ardrone_gui.cpp  
 	src/UINode/RosThread.cpp  
 	src/UINode/PingThread.cpp  
 )
 
 set(GUI_HEADER_FILES        
-	src/UINode/tum_ardrone_gui.h 
+	src/UINode/uga_tum_ardrone_gui.h 
 	src/UINode/RosThread.h  
 	src/UINode/PingThread.h  
 )
 
 # *.ui
 set(GUI_UI_FILES        
-	src/UINode/tum_ardrone_gui.ui 
+	src/UINode/uga_tum_ardrone_gui.ui 
 )
 
 # *.qrc

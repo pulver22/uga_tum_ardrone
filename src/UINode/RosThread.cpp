@@ -1,22 +1,22 @@
  /**
- *  This file is part of tum_ardrone.
+ *  This file is part of uga_tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
  *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
- *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
+ *  For more information see <https://vision.in.tum.de/data/software/uga_tum_ardrone>.
  *
- *  tum_ardrone is free software: you can redistribute it and/or modify
+ *  uga_tum_ardrone is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  tum_ardrone is distributed in the hope that it will be useful,
+ *  uga_tum_ardrone is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with uga_tum_ardrone.  If not, see <http://www.gnu.org/licenses/>.
  */
  
 #include "RosThread.h"
@@ -24,7 +24,7 @@
 #include "cvd/thread.h"
 #include "ros/ros.h"
 #include "ros/callback_queue.h"
-#include "tum_ardrone_gui.h"
+#include "uga_tum_ardrone_gui.h"
 #include "stdio.h"
 #include "std_msgs/Empty.h"
 
@@ -70,7 +70,7 @@ void RosThread::takeoffCb(std_msgs::EmptyConstPtr)
 	gui->addLogLine("sent: Takeoff");
 }
 
-void RosThread::droneposeCb(const tum_ardrone::filter_stateConstPtr statePtr)
+void RosThread::droneposeCb(const uga_tum_ardrone::filter_stateConstPtr statePtr)
 {
 	dronePoseCount++;
 }
@@ -175,8 +175,8 @@ void RosThread::run()
     vel_pub	   = nh_.advertise<geometry_msgs::Twist>(nh_.resolveName("cmd_vel"),1);
     vel_sub	   = nh_.subscribe(nh_.resolveName("cmd_vel"),50, &RosThread::velCb, this);
 
-    tum_ardrone_pub	   = nh_.advertise<std_msgs::String>(nh_.resolveName("tum_ardrone/com"),50);
-    tum_ardrone_sub	   = nh_.subscribe(nh_.resolveName("tum_ardrone/com"),50, &RosThread::comCb, this);
+    uga_tum_ardrone_pub	   = nh_.advertise<std_msgs::String>(nh_.resolveName("uga_tum_ardrone/com"),50);
+    uga_tum_ardrone_sub	   = nh_.subscribe(nh_.resolveName("uga_tum_ardrone/com"),50, &RosThread::comCb, this);
 
 
     dronepose_sub	   = nh_.subscribe(nh_.resolveName("ardrone/predictedPose"),50, &RosThread::droneposeCb, this);
@@ -244,7 +244,7 @@ void RosThread::publishCommand(std::string c)
 	std_msgs::String s;
 	s.data = c.c_str();
 	pthread_mutex_lock(&send_CS);
-	tum_ardrone_pub.publish(s);
+	uga_tum_ardrone_pub.publish(s);
 	pthread_mutex_unlock(&send_CS);
 }
 
