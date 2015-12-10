@@ -113,8 +113,13 @@ None
 - RescaleFixOrigin: If the scale of the Map is reestimated, only one point in the mapping PTAM <-> World remains fixed.
 	If RescaleFixOrigin == false, this is the current pos. of the drone (to avoid sudden, large "jumps"). this however makes the map "drift".
 	If RescaleFixOrigin == true, by default this is the initialization point where the second KF has been taken (drone pos. may jump suddenly, but map remains fixed.). The fixpoint may be set by the command "lockScaleFP".
+- MinTolerance: min. scale to accept, prevents initialization failures from resulting in drone crashes
+- MaxTolerance: max. scale to accept, prevents initialization failures from resulting in drone crashes
                   
 - c1 ... c8: prediction model parameters of the EKF. see "Camera-Based Navigation of a Low-Cost Quadrocopter"
+
+- zDriftThreshold: ignore changes in Z below this threshold when landed, prevents drifting when on the ground and tracking is lost
+- yawDriftThreshold: ingore changes in Yaw below this threshold when landed, prevents drifting when on the ground and tracking is lost
 
 #### Required tf transforms
 
@@ -161,7 +166,10 @@ Clicking on the video window will generate waypoints, which are sent to drone_au
 
 ### drone_autopilot
 
-PID controller for the drone. Also includes basic way-point-following and automatic initialization. Requires [drone_stateestimation](#drone_stateestimation) to be running. The target is set via the /uga_tum_ardrone/com topic.
+Critically damped spring based controller for the drone (see: [Wikipedia: Damping](https://en.wikipedia.org/wiki/Damping) ). Also includes basic way-point-following and automatic initialization. Requires [drone_stateestimation](#drone_stateestimation) to be running. The target is set via the /uga_tum_ardrone/com topic.
+
+Two dimensions (Yaw and Z) can be controlled directly by the drone's motors.  The other two (X and Y) are controlled by the drone "leaning" in that direction, which complicates control slightly. 
+The damped springs provide a target force that the drone tries to generate with its motors and leaning, while still maintaining it's altitude.
 
 #### Subscribed topics
 
@@ -181,10 +189,17 @@ None
 #### Parameters
 
 - ~minPublishFreq: usually, a control command is sent for each pose estimate received from drone_stateestimation. However, if no pose estimate is received for more than minPublishFreq milliseconds, a HOVER command is sent, causing the drone to hover if for example drone_stateestimation is shut down suddenly. Default: 110.
-- Ki_X, Kd_X, Kp_X: PID controller parameters for roll/pitch, gaz (up/down) and yaw.
-- max_X: maximal respective control command sent (ever).
+- K_direct, K_rp: spring strength of the directly controlled dimensions (yaw and Z) and the leaning dimensions (X and Y) respectively
+- droneMassInKilos: needed for proper damping
+- max_yaw: can be used to limit the speed of yaw'ing (the drone can spin quite fast!)
+- xy_damping_factor: due to the use of leaning the drone can only roughly approximate a damped spring, tune this parameter to account for things like air resistance and wind
+- max_rp_radians: this should match the corresponding parameter in ardrone_autonomy
+- max_gaz_rise: limit the maximum positive Z speed (m/s)
+- max_gaz_drop: limit the maximum negative Z speed (m/s)
+- max_rp: limit the maximum leaning command sent (x and y)
+
 - rise_fac: rise commands are larger than respective drop commands by this factor. This is due to the drone sometimes dropping unpredictably fast for large drop commands, however rising somethimes requires large rise commands.
-aggressiveness: multiplied to PI-component of all commands sent. Low values lead to the drone flying "slower".
+- aggressiveness: multiplied to PI-component of all commands sent. Low values lead to the drone flying "slower".
 
 #### Required tf transforms
 
@@ -207,6 +222,12 @@ The behavior of the autopilot is set by sending commands on /uga_tum_ardrone/com
           waiting waitTimeMS and then taking the second KF. 
           This is done until success (flying up and down respectively).
         - good default values are "autoInit 500 800 4000 0.5" 
+
+- setInitialYaw [double yaw]
+
+        sets the yaw the drone is started at.  Most useful with the ardrone 2.0
+        with absolute yaw control, as it allows you to specify some other yaw
+        as the zero point rather than due north.
 
 - autoTakeover [int moveTimeMS] [int waitTimeMS] [int riseTimeMs] [float initSpeed]
 
@@ -299,7 +320,11 @@ This node offers a simple QT GUI to control the [drone_autopilot](#drone_autopil
 
 #### Parameters
 
-None
+- DroneIP: IP address to periodically ping in order to estimate the latency of drone control. DO NO IGNORE THIS PARAMETER, it significantly affects performance.
+
+- KBsensRP: Sensitivity for roll/pitch Keyboard control
+- KBsensYaw: Sensitivity for yaw Keyboard control
+- KBsensGAZ: Sensitivity for gaz Keyboard control
 
 #### Required tf transforms
 
