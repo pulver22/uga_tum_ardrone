@@ -2,6 +2,7 @@
  *  This file is part of tum_ardrone.
  *
  *  Copyright 2012 Jakob Engel <jajuengel@gmail.com> (Technical University of Munich)
+ *  Portions Copyright 2015 Kenneth Bogert <kbogert@uga.edu> and Sina Solaimanpour <sina@uga.edu> (THINC Lab, University of Georgia)
  *  For more information see <https://vision.in.tum.de/data/software/tum_ardrone>.
  *
  *  tum_ardrone is free software: you can redistribute it and/or modify

@@ -1,6 +1,8 @@
 #
 # Author: Jakob Engel <jajuengel@gmail.com>
 # Contributor: Stefan Wilkes <stefan.wilkes@gmail.com>
+# Contributor: Kenneth Bogert <kbogert@uga.edu>
+# Contributor: Sina Solaimanpour <sina@uga.edu>
 #
 cmake_minimum_required(VERSION 2.8.3)
 project(tum_ardrone)
