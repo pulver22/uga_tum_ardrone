@@ -32,6 +32,8 @@ ExternalProject_Add(thirdparty
 	BUILD_IN_SOURCE 1
 )
 
+find_package(OpenGL REQUIRED)
+
 # ------------------- add dynamic reconfigure api ------------------------------------
 generate_dynamic_reconfigure_options(
   cfg/AutopilotParams.cfg
