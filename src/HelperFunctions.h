@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <TooN/TooN.h>
 #include <TooN/so3.h>
-#include "ros/ros.h"
+#include <ros/ros.h>
 
 /****************************************************
 *********** Pose-Representation Conversion **********
